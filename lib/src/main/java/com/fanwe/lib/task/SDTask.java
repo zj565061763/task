@@ -7,7 +7,6 @@ import java.util.concurrent.Future;
  */
 public abstract class SDTask implements Runnable
 {
-
     Future<?> mFuture;
 
     /**
@@ -15,11 +14,30 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public boolean cancel()
+    public synchronized boolean cancel()
+    {
+        boolean result = false;
+        if (mFuture != null)
+        {
+            result = mFuture.cancel(true);
+        }
+        if (result)
+        {
+            onCancel();
+        }
+        return result;
+    }
+
+    /**
+     * 任务是否已经被取消
+     *
+     * @return
+     */
+    public synchronized boolean isCancelled()
     {
         if (mFuture != null)
         {
-            return mFuture.cancel(true);
+            return mFuture.isCancelled();
         } else
         {
             return false;
@@ -48,9 +66,14 @@ public abstract class SDTask implements Runnable
         }
     }
 
-    protected abstract void onRun();
+    protected abstract void onRun() throws Exception;
 
     protected void onError(Exception e)
+    {
+
+    }
+
+    protected void onCancel()
     {
 
     }
