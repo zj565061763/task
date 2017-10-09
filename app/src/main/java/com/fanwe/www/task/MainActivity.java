@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickButton(View view)
     {
+        Log.i(TAG, "onClickButton");
         mIncreaseTask.cancel();
     }
 
@@ -30,21 +31,19 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onRun() throws Exception
         {
-            int i = 0;
-            while (i < Integer.MAX_VALUE)
+            long i = 0;
+            while (!isCancelled() && i < Long.MAX_VALUE)
             {
                 i++;
                 Log.i(TAG, "looper:" + i);
-
-                Thread.sleep(1000);
             }
         }
 
         @Override
-        protected void onCancel()
+        protected void onCancelCalled()
         {
-            super.onCancel();
-            Log.i(TAG, "onCancel");
+            super.onCancelCalled();
+            Log.i(TAG, "onCancelCalled");
         }
     };
 

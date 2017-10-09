@@ -23,7 +23,7 @@ public abstract class SDTask implements Runnable
         }
         if (result)
         {
-            onCancel();
+            onCancelCalled();
         }
         return result;
     }
@@ -73,7 +73,7 @@ public abstract class SDTask implements Runnable
 
     }
 
-    protected void onCancel()
+    protected void onCancelCalled()
     {
 
     }
