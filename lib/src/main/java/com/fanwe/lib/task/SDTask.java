@@ -13,17 +13,6 @@ public abstract class SDTask<T> implements Runnable
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     Future<?> mFuture;
-    private String mTag;
-
-    public void setTag(String tag)
-    {
-        mTag = tag;
-    }
-
-    public String getTag()
-    {
-        return mTag;
-    }
 
     /**
      * 取消任务
