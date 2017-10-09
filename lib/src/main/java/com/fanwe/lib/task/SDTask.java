@@ -1,16 +1,12 @@
 package com.fanwe.lib.task;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import java.util.concurrent.Future;
 
 /**
  * Created by zhengjun on 2017/9/12.
  */
-public abstract class SDTask<T> implements Runnable
+public abstract class SDTask implements Runnable
 {
-    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     Future<?> mFuture;
 
@@ -45,40 +41,14 @@ public abstract class SDTask<T> implements Runnable
     {
         try
         {
-            T result = onRun();
-            notifyResult(result);
+            onRun();
         } catch (Exception e)
         {
             onError(e);
         }
     }
 
-    protected abstract T onRun();
-
-    protected abstract void onResult(T result);
-
-    /**
-     * 主线程通知结果
-     *
-     * @param result
-     */
-    protected final void notifyResult(final T result)
-    {
-        if (Looper.getMainLooper() == Looper.myLooper())
-        {
-            onResult(result);
-        } else
-        {
-            MAIN_HANDLER.post(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    onResult(result);
-                }
-            });
-        }
-    }
+    protected abstract void onRun();
 
     protected void onError(Exception e)
     {
