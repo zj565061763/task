@@ -86,7 +86,7 @@ public class SDTaskManager
         RunnableInfo info = getRunnableInfo(runnable);
         if (info == null)
         {
-            return false;
+            return true;
         }
         return info.future.isCancelled();
     }
