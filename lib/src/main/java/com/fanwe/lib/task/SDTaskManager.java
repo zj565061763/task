@@ -25,7 +25,7 @@ public class SDTaskManager
             DEFAULT_KEEP_ALIVE, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>());
 
-    private Map<Runnable, RunnableInfo> mMapRunnable;
+    private Map<Runnable, RunnableInfo> mMapRunnable = new WeakHashMap<>();
 
     private SDTaskManager()
     {
@@ -44,15 +44,6 @@ public class SDTaskManager
             }
         }
         return sInstance;
-    }
-
-    private Map<Runnable, RunnableInfo> getMapRunnable()
-    {
-        if (mMapRunnable == null)
-        {
-            mMapRunnable = new WeakHashMap<>();
-        }
-        return mMapRunnable;
     }
 
     public Future<?> submit(Runnable runnable)
@@ -74,17 +65,13 @@ public class SDTaskManager
         RunnableInfo info = new RunnableInfo();
         info.future = future;
         info.tag = tag;
-        getMapRunnable().put(runnable, info);
+        mMapRunnable.put(runnable, info);
 
         return future;
     }
 
     public synchronized RunnableInfo getRunnableInfo(Runnable runnable)
     {
-        if (mMapRunnable == null || mMapRunnable.isEmpty() || runnable == null)
-        {
-            return null;
-        }
         return mMapRunnable.get(runnable);
     }
 

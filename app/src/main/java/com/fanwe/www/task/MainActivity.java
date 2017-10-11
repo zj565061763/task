@@ -28,10 +28,11 @@ public class MainActivity extends AppCompatActivity
             {
                 Log.i(TAG, "start---------->");
                 long i = 0;
-                while (!isCancelled() && i < Long.MAX_VALUE)
+                boolean isCancelled = isCancelled();
+                while (!isCancelled && i < Long.MAX_VALUE)
                 {
                     i++;
-                    Log.i(TAG, "looper:" + i);
+                    Log.i(TAG, "looper:" + i + " " + isCancelled);
                 }
             }
 
