@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -17,13 +17,13 @@ public class SDTaskManager
     private static SDTaskManager sInstance;
 
     private static final int DEFAULT_CORE_POOL_SIZE = 3;
-    private static final int DEFAULT_MAX_POOL_SIZE = 128;
+    private static final int DEFAULT_MAX_POOL_SIZE = 16;
     private static final int DEFAULT_KEEP_ALIVE = 1;
 
     private static final ExecutorService DEFAULT_EXECUTOR = new ThreadPoolExecutor(
             DEFAULT_CORE_POOL_SIZE, DEFAULT_MAX_POOL_SIZE,
             DEFAULT_KEEP_ALIVE, TimeUnit.SECONDS,
-            new SynchronousQueue<Runnable>());
+            new LinkedBlockingQueue<Runnable>());
 
     private Map<Runnable, RunnableInfo> mMapRunnable = new WeakHashMap<>();
 

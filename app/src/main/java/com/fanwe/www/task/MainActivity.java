@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
                 super.onCancel();
                 Log.e(TAG, "onCancel");
             }
-        }.setTag(this).submit();
+        }.submit(this);
     }
 
     public void onClickCancelTask(View view)

@@ -8,17 +8,17 @@ import java.util.concurrent.Future;
  */
 public abstract class SDTask implements Runnable
 {
-    private Object mTag;
     private Future<?> mFuture;
 
     /**
      * 提交任务
      *
+     * @param tag 任务对应的tag
      * @return
      */
-    public final Future<?> submit()
+    public final Future<?> submit(Object tag)
     {
-        mFuture = SDTaskManager.getInstance().submit(this, getTag());
+        mFuture = SDTaskManager.getInstance().submit(this, tag);
         return mFuture;
     }
 
@@ -43,6 +43,16 @@ public abstract class SDTask implements Runnable
     }
 
     /**
+     * 任务是否完成
+     *
+     * @return
+     */
+    public boolean isDone()
+    {
+        return mFuture == null ? false : mFuture.isDone();
+    }
+
+    /**
      * 根据tag取消任务
      *
      * @param tag
@@ -51,31 +61,6 @@ public abstract class SDTask implements Runnable
     public static int cancel(Object tag)
     {
         return SDTaskManager.getInstance().cancel(tag);
-    }
-
-    /**
-     * 返回任务对应的tag
-     *
-     * @return
-     */
-    public Object getTag()
-    {
-        return mTag;
-    }
-
-    /**
-     * 设置任务对应的tag
-     *
-     * @param tag
-     * @return
-     */
-    public SDTask setTag(Object tag)
-    {
-        if (mTag == null)
-        {
-            mTag = tag;
-        }
-        return this;
     }
 
     @Override
