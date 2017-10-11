@@ -13,7 +13,6 @@ android {
         versionCode 20171009
         versionName "1.0.0"
 
-
     }
     buildTypes {
         release {

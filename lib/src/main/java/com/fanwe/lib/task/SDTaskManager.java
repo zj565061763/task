@@ -44,11 +44,6 @@ public class SDTaskManager
     public Future<?> submit(Runnable runnable)
     {
         Future<?> future = DEFAULT_EXECUTOR.submit(runnable);
-        if (runnable instanceof SDTask)
-        {
-            SDTask task = (SDTask) runnable;
-            task.mFuture = future;
-        }
         return future;
     }
 

@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
  */
 public abstract class SDTask implements Runnable
 {
-    Future<?> mFuture;
+    private Future<?> mFuture;
 
     /**
      * 取消任务
@@ -51,7 +51,8 @@ public abstract class SDTask implements Runnable
      */
     public final Future<?> submit()
     {
-        return SDTaskManager.getInstance().submit(this);
+        mFuture = SDTaskManager.getInstance().submit(this);
+        return mFuture;
     }
 
     @Override
