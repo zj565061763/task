@@ -76,7 +76,7 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (Exception e)
         {
-            if (e instanceof InterruptedIOException)
+            if (e instanceof InterruptedException || e instanceof InterruptedIOException)
             {
                 onCancel();
             } else
