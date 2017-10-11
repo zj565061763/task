@@ -25,7 +25,7 @@ public class SDTaskManager
             DEFAULT_KEEP_ALIVE, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
-    private Map<Runnable, RunnableInfo> mMapRunnable = new WeakHashMap<>();
+    private Map<Runnable, TaskInfo> mMapRunnable = new WeakHashMap<>();
 
     private SDTaskManager()
     {
@@ -62,7 +62,7 @@ public class SDTaskManager
     {
         Future<?> future = DEFAULT_EXECUTOR.submit(runnable);
 
-        RunnableInfo info = new RunnableInfo();
+        TaskInfo info = new TaskInfo();
         info.future = future;
         info.tag = tag;
         mMapRunnable.put(runnable, info);
@@ -70,7 +70,7 @@ public class SDTaskManager
         return future;
     }
 
-    public synchronized RunnableInfo getRunnableInfo(Runnable runnable)
+    public synchronized TaskInfo getTaskInfo(Runnable runnable)
     {
         return mMapRunnable.get(runnable);
     }
@@ -83,7 +83,7 @@ public class SDTaskManager
      */
     public synchronized boolean cancel(Runnable runnable)
     {
-        RunnableInfo info = getRunnableInfo(runnable);
+        TaskInfo info = getTaskInfo(runnable);
         if (info == null)
         {
             return false;
@@ -108,11 +108,11 @@ public class SDTaskManager
 
         int count = 0;
 
-        Iterator<Map.Entry<Runnable, RunnableInfo>> it = mMapRunnable.entrySet().iterator();
+        Iterator<Map.Entry<Runnable, TaskInfo>> it = mMapRunnable.entrySet().iterator();
         while (it.hasNext())
         {
-            Map.Entry<Runnable, RunnableInfo> item = it.next();
-            RunnableInfo info = item.getValue();
+            Map.Entry<Runnable, TaskInfo> item = it.next();
+            TaskInfo info = item.getValue();
             if (tag.equals(info.tag))
             {
                 info.future.cancel(true);
@@ -123,7 +123,7 @@ public class SDTaskManager
         return count;
     }
 
-    private static class RunnableInfo
+    private static class TaskInfo
     {
         public Future future;
         public Object tag;
