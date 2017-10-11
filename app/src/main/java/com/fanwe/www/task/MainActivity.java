@@ -17,35 +17,36 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mIncreaseTask.submit();
     }
 
-    public void onClickButton(View view)
+    public void onClickAddTask(View view)
     {
-        Log.i(TAG, "onClickButton");
-        mIncreaseTask.cancel();
-    }
-
-    private SDTask mIncreaseTask = new SDTask()
-    {
-        @Override
-        protected void onRun() throws Exception
+        new SDTask()
         {
-            long i = 0;
-            while (!isCancelled() && i < Long.MAX_VALUE)
+            @Override
+            protected void onRun() throws Exception
             {
-                i++;
-                Log.i(TAG, "looper:" + i);
+                Log.i(TAG, "start---------->");
+                long i = 0;
+                while (!isCancelled() && i < Long.MAX_VALUE)
+                {
+                    i++;
+                    Log.i(TAG, "looper:" + i);
+                }
             }
-        }
 
-        @Override
-        protected void onCancelCalled()
-        {
-            super.onCancelCalled();
-            Log.i(TAG, "onCancelCalled");
-        }
-    };
+            @Override
+            protected void onCancel()
+            {
+                super.onCancel();
+                Log.e(TAG, "onCancel");
+            }
+        }.submit(this);
+    }
 
+    public void onClickCancelTask(View view)
+    {
+        SDTask.cancel(this);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.fanwe.lib.task;
 
+import java.io.InterruptedIOException;
 import java.util.concurrent.Future;
 
 /**
@@ -7,52 +8,64 @@ import java.util.concurrent.Future;
  */
 public abstract class SDTask implements Runnable
 {
-    private Future<?> mFuture;
+    private Object mTag;
+
+    public final Future<?> submit()
+    {
+        return submit(null);
+    }
+
+    /**
+     * 提交任务
+     *
+     * @param tag 任务对应的tag
+     * @return
+     */
+    public final Future<?> submit(Object tag)
+    {
+        mTag = tag;
+        return SDTaskManager.getInstance().submit(this, tag);
+    }
 
     /**
      * 取消任务
      *
      * @return
      */
-    public synchronized boolean cancel()
+    public boolean cancel()
     {
-        boolean result = false;
-        if (mFuture != null)
-        {
-            result = mFuture.cancel(true);
-        }
-        if (result)
-        {
-            onCancelCalled();
-        }
-        return result;
+        return SDTaskManager.getInstance().cancel(this);
     }
 
     /**
-     * 任务是否已经被取消
+     * 是否被取消
      *
      * @return
      */
-    public synchronized boolean isCancelled()
+    public boolean isCancelled()
     {
-        if (mFuture != null)
-        {
-            return mFuture.isCancelled();
-        } else
-        {
-            return false;
-        }
+        return SDTaskManager.getInstance().isCancelled(this);
     }
 
     /**
-     * 执行任务
+     * 根据tag取消任务
+     *
+     * @param tag
+     * @return 取消成功的数量
+     */
+    public static int cancel(Object tag)
+    {
+        return SDTaskManager.getInstance().cancel(tag);
+    }
+
+    /**
+     * 返回任务对应的tag
      *
      * @return
      */
-    public final Future<?> submit()
+    public Object getTag()
     {
-        mFuture = SDTaskManager.getInstance().submit(this);
-        return mFuture;
+        return mTag;
     }
 
     @Override
@@ -63,7 +76,13 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (Exception e)
         {
-            onError(e);
+            if (e instanceof InterruptedIOException)
+            {
+                onCancel();
+            } else
+            {
+                onError(e);
+            }
         }
     }
 
@@ -74,7 +93,7 @@ public abstract class SDTask implements Runnable
 
     }
 
-    protected void onCancelCalled()
+    protected void onCancel()
     {
 
     }
