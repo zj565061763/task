@@ -28,11 +28,10 @@ public class MainActivity extends AppCompatActivity
             {
                 Log.i(TAG, "start---------->");
                 long i = 0;
-                while (!isCancelled() && i < 5)
+                while (!isCancelled() && i < Long.MAX_VALUE)
                 {
                     i++;
                     Log.i(TAG, "looper:" + i);
-                    Thread.sleep(1000);
                 }
             }
 
