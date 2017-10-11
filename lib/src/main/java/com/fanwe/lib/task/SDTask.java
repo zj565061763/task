@@ -11,21 +11,14 @@ public abstract class SDTask implements Runnable
     private Object mTag;
     private Future<?> mFuture;
 
-    public final Future<?> submit()
-    {
-        return submit(null);
-    }
-
     /**
      * 提交任务
      *
-     * @param tag 任务对应的tag
      * @return
      */
-    public final Future<?> submit(Object tag)
+    public final Future<?> submit()
     {
-        mTag = tag;
-        mFuture = SDTaskManager.getInstance().submit(this, tag);
+        mFuture = SDTaskManager.getInstance().submit(this, getTag());
         return mFuture;
     }
 
@@ -68,6 +61,21 @@ public abstract class SDTask implements Runnable
     public Object getTag()
     {
         return mTag;
+    }
+
+    /**
+     * 设置任务对应的tag
+     *
+     * @param tag
+     * @return
+     */
+    public SDTask setTag(Object tag)
+    {
+        if (mTag == null)
+        {
+            mTag = tag;
+        }
+        return this;
     }
 
     @Override
