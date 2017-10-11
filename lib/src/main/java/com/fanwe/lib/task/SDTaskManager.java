@@ -106,11 +106,6 @@ public class SDTaskManager
         }
         info.future.cancel(true);
         mMapRunnable.remove(runnable);
-
-        if (mMapRunnable.isEmpty())
-        {
-            mMapRunnable = null;
-        }
         return true;
     }
 
@@ -122,7 +117,7 @@ public class SDTaskManager
      */
     public synchronized int cancel(Object tag)
     {
-        if (mMapRunnable == null || mMapRunnable.isEmpty() || tag == null)
+        if (mMapRunnable.isEmpty() || tag == null)
         {
             return 0;
         }
@@ -140,11 +135,6 @@ public class SDTaskManager
                 it.remove();
                 count++;
             }
-        }
-
-        if (mMapRunnable.isEmpty())
-        {
-            mMapRunnable = null;
         }
         return count;
     }
