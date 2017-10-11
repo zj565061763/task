@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 public abstract class SDTask implements Runnable
 {
     private Object mTag;
+    private Future<?> mFuture;
 
     public final Future<?> submit()
     {
@@ -24,7 +25,8 @@ public abstract class SDTask implements Runnable
     public final Future<?> submit(Object tag)
     {
         mTag = tag;
-        return SDTaskManager.getInstance().submit(this, tag);
+        mFuture = SDTaskManager.getInstance().submit(this, tag);
+        return mFuture;
     }
 
     /**
@@ -44,7 +46,7 @@ public abstract class SDTask implements Runnable
      */
     public boolean isCancelled()
     {
-        return SDTaskManager.getInstance().isCancelled(this);
+        return mFuture == null ? false : mFuture.isCancelled();
     }
 
     /**

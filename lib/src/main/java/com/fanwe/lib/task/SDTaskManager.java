@@ -76,22 +76,6 @@ public class SDTaskManager
     }
 
     /**
-     * Runnable是否已经被取消
-     *
-     * @param runnable
-     * @return
-     */
-    public synchronized boolean isCancelled(Runnable runnable)
-    {
-        RunnableInfo info = getRunnableInfo(runnable);
-        if (info == null)
-        {
-            return true;
-        }
-        return info.future.isCancelled();
-    }
-
-    /**
      * 取消Runnable
      *
      * @param runnable
