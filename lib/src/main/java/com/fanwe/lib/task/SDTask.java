@@ -1,5 +1,8 @@
 package com.fanwe.lib.task;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.io.InterruptedIOException;
 import java.util.concurrent.Future;
 
@@ -8,7 +11,20 @@ import java.util.concurrent.Future;
  */
 public abstract class SDTask implements Runnable
 {
+    public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+
     private Future<?> mFuture;
+
+    public static void runOnUiThread(Runnable runnable)
+    {
+        if (Looper.myLooper() == Looper.getMainLooper())
+        {
+            runnable.run();
+        } else
+        {
+            MAIN_HANDLER.post(runnable);
+        }
+    }
 
     /**
      * 提交任务
