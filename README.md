@@ -2,7 +2,7 @@
 简单封装的异步执行库
 
 ## Gradle
-`compile 'com.fanwe.android:lib:task-1.0.4'`
+[![](https://jitpack.io/v/zj565061763/task.svg)](https://jitpack.io/#zj565061763/task)
 
 ## 使用方法
 ```java
