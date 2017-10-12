@@ -1,6 +1,9 @@
 ## About
 简单封装的异步执行库
 
+## Gradle
+`compile 'com.fanwe.android:lib:task-1.0.4'`
+
 ## 使用方法
 ```java
 SDTask task = new SDTask()
