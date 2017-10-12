@@ -19,6 +19,7 @@ public abstract class SDTask implements Runnable
     public final Future<?> submit(Object tag)
     {
         mFuture = SDTaskManager.getInstance().submit(this, tag);
+        onSubmit();
         return mFuture;
     }
 
@@ -61,6 +62,11 @@ public abstract class SDTask implements Runnable
     public static int cancel(Object tag)
     {
         return SDTaskManager.getInstance().cancel(tag);
+    }
+
+    protected void onSubmit()
+    {
+
     }
 
     @Override
