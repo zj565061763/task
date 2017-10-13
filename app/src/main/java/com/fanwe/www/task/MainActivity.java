@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity
                 if (isCancelled())
                 {
                     //任务被取消
-                    Log.e(TAG, "onError cancelled");
+                    Log.e(TAG, "task cancelled");
                 }
             }
 
