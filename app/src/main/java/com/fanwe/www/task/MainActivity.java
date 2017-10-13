@@ -28,12 +28,13 @@ public class MainActivity extends AppCompatActivity
             {
                 super.onSubmit();
                 //任务被提交到线程池
-                Log.i(TAG, "onSubmit");
+                Log.i(TAG, "onSubmit current count---------->" + SDTask.getTask(MainActivity.this).size());
             }
 
             @Override
             protected void onRun() throws Exception
             {
+                Log.i(TAG, "onRun");
                 long i = 0;
                 while (i < Long.MAX_VALUE)
                 {
@@ -73,10 +74,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancelTag(this, false);
-
-//        int count = SDTask.getTask(this).size();
-//        Log.i(TAG, "task count:" + count);
+        SDTask.cancelTag(this, true);
     }
 
 }
