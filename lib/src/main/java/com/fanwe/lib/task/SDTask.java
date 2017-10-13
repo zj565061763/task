@@ -3,6 +3,9 @@ package com.fanwe.lib.task;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -82,6 +85,30 @@ public abstract class SDTask implements Runnable
     public static int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
         return SDTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
+    }
+
+    /**
+     * 查找tag对应的任务
+     *
+     * @param tag
+     * @return
+     */
+    public static List<SDTask> getTask(Object tag)
+    {
+        List<SDTask> listTask = new ArrayList<>();
+        List<Map.Entry<Runnable, SDTaskManager.TaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
+        if (!listInfo.isEmpty())
+        {
+            for (Map.Entry<Runnable, SDTaskManager.TaskInfo> item : listInfo)
+            {
+                Runnable runnable = item.getKey();
+                if (runnable instanceof SDTask)
+                {
+                    listTask.add((SDTask) runnable);
+                }
+            }
+        }
+        return listTask;
     }
 
     @Override

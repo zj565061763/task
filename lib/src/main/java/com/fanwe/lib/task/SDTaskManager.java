@@ -77,9 +77,9 @@ public class SDTaskManager
         return mMapRunnable.get(runnable);
     }
 
-    public synchronized List<TaskInfo> getTaskInfo(Object tag)
+    public synchronized List<Map.Entry<Runnable, TaskInfo>> getTaskInfo(Object tag)
     {
-        List<TaskInfo> listInfo = new ArrayList<>();
+        List<Map.Entry<Runnable, TaskInfo>> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
             for (Map.Entry<Runnable, TaskInfo> item : mMapRunnable.entrySet())
@@ -87,7 +87,7 @@ public class SDTaskManager
                 TaskInfo info = item.getValue();
                 if (tag.equals(info.tag))
                 {
-                    listInfo.add(info);
+                    listInfo.add(item);
                 }
             }
         }
@@ -144,7 +144,7 @@ public class SDTaskManager
         return count;
     }
 
-    private static class TaskInfo
+    public static class TaskInfo
     {
         public Future future;
         public Object tag;
