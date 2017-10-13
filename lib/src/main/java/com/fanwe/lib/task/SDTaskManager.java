@@ -1,6 +1,8 @@
 package com.fanwe.lib.task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
@@ -73,6 +75,23 @@ public class SDTaskManager
     public synchronized TaskInfo getTaskInfo(Runnable runnable)
     {
         return mMapRunnable.get(runnable);
+    }
+
+    public synchronized List<TaskInfo> getTaskInfo(Object tag)
+    {
+        List<TaskInfo> listInfo = new ArrayList<>();
+        if (tag != null && !mMapRunnable.isEmpty())
+        {
+            for (Map.Entry<Runnable, TaskInfo> item : mMapRunnable.entrySet())
+            {
+                TaskInfo info = item.getValue();
+                if (tag.equals(info.tag))
+                {
+                    listInfo.add(info);
+                }
+            }
+        }
+        return listInfo;
     }
 
     /**
