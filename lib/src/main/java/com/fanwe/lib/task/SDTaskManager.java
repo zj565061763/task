@@ -115,7 +115,7 @@ public class SDTaskManager
         {
             return false;
         }
-
+        
         info.cancel(mayInterruptIfRunning);
         mMapRunnable.remove(runnable);
         return true;
