@@ -43,12 +43,13 @@ public abstract class SDTask implements Runnable
     /**
      * 取消任务
      *
+     * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return
      */
-    public synchronized boolean cancel()
+    public synchronized boolean cancel(boolean mayInterruptIfRunning)
     {
         mIsCancelled = true;
-        return SDTaskManager.getInstance().cancel(this);
+        return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
 
     /**
@@ -72,14 +73,15 @@ public abstract class SDTask implements Runnable
     }
 
     /**
-     * 根据tag取消任务
+     * 根据tag取消Runnable
      *
      * @param tag
+     * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return 取消成功的数量
      */
-    public static int cancelTag(Object tag)
+    public static int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
-        return SDTaskManager.getInstance().cancelTag(tag);
+        return SDTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
     }
 
     @Override

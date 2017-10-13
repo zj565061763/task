@@ -79,16 +79,17 @@ public class SDTaskManager
      * 取消Runnable
      *
      * @param runnable
+     * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return
      */
-    public synchronized boolean cancel(Runnable runnable)
+    public synchronized boolean cancel(Runnable runnable, boolean mayInterruptIfRunning)
     {
         TaskInfo info = getTaskInfo(runnable);
         if (info == null)
         {
             return false;
         }
-        info.future.cancel(true);
+        info.future.cancel(mayInterruptIfRunning);
         mMapRunnable.remove(runnable);
         return true;
     }
@@ -97,9 +98,10 @@ public class SDTaskManager
      * 根据tag取消Runnable
      *
      * @param tag
+     * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return 取消成功的数量
      */
-    public synchronized int cancelTag(Object tag)
+    public synchronized int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
         if (mMapRunnable.isEmpty() || tag == null)
         {
@@ -115,7 +117,7 @@ public class SDTaskManager
             TaskInfo info = item.getValue();
             if (tag.equals(info.tag))
             {
-                info.future.cancel(true);
+                info.future.cancel(mayInterruptIfRunning);
                 it.remove();
                 count++;
             }

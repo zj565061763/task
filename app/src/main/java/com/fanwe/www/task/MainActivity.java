@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancelTag(this);
+        SDTask.cancelTag(this, true);
     }
 
 }
