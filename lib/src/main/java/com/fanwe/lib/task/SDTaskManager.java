@@ -136,11 +136,17 @@ public class SDTaskManager
         {
             Map.Entry<Runnable, SDTaskInfo> item = it.next();
             SDTaskInfo info = item.getValue();
-            if (tag.equals(info.getTag()))
+            if (info.isDone())
             {
-                info.cancel(mayInterruptIfRunning);
                 it.remove();
-                count++;
+            } else
+            {
+                if (tag.equals(info.getTag()))
+                {
+                    info.cancel(mayInterruptIfRunning);
+                    it.remove();
+                    count++;
+                }
             }
         }
         return count;
