@@ -100,7 +100,7 @@ public class SDTaskManager
      *
      * @param runnable
      * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
-     * @return
+     * @return true-申请取消成功
      */
     public synchronized boolean cancel(Runnable runnable, boolean mayInterruptIfRunning)
     {
@@ -120,7 +120,7 @@ public class SDTaskManager
      *
      * @param tag
      * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
-     * @return 取消成功的数量
+     * @return 申请取消成功的数量
      */
     public synchronized int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
