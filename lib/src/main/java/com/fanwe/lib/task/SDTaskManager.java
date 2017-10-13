@@ -75,7 +75,13 @@ public class SDTaskManager
 
     public synchronized SDTaskInfo getTaskInfo(Runnable runnable)
     {
-        return mMapRunnable.get(runnable);
+        SDTaskInfo info = mMapRunnable.get(runnable);
+        if (info != null && info.isDone())
+        {
+            mMapRunnable.remove(runnable);
+            info = null;
+        }
+        return info;
     }
 
     public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(Object tag)
