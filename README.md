@@ -41,6 +41,6 @@ SDTask task = new SDTask()
 };
 
 task.submit(this); //把任务提交到线程池，参数为该任务对应的tag，可用于取消任务
-task.cancel(); //取消任务
-SDTask.cancelTag(this); //根据tag取消任务
+task.cancel(true); //取消任务，true-如果线程已经执行有可能被打断收到异常，如果不希望线程被打断，取消的时候传false，然后自己在onRun中判断isCancelled()来主动停止线程
+SDTask.cancelTag(this, true); //根据tag取消任务，true，false参数解释同上
 ```
