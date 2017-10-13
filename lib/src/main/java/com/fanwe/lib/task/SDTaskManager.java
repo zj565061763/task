@@ -99,7 +99,7 @@ public class SDTaskManager
      * @param tag
      * @return 取消成功的数量
      */
-    public synchronized int cancel(Object tag)
+    public synchronized int cancelTag(Object tag)
     {
         if (mMapRunnable.isEmpty() || tag == null)
         {

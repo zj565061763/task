@@ -24,14 +24,20 @@ public class MainActivity extends AppCompatActivity
         new SDTask()
         {
             @Override
+            protected void onSubmit()
+            {
+                super.onSubmit();
+                //任务被提交到线程池
+                Log.i(TAG, "onSubmit");
+            }
+
+            @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "start---------->");
                 long i = 0;
                 while (i < Long.MAX_VALUE)
                 {
                     boolean isCancelled = isCancelled();
-
                     i++;
                     Log.i(TAG, "looper:" + i + " " + isCancelled);
 
@@ -39,21 +45,35 @@ public class MainActivity extends AppCompatActivity
                     {
                         break;
                     }
+                    Thread.sleep(1000);
                 }
             }
 
             @Override
-            protected void onCancel()
+            protected void onError(Exception e)
             {
-                super.onCancel();
-                Log.e(TAG, "onCancel");
+                super.onError(e);
+                //任务异常回调
+                Log.e(TAG, "onError");
+                if (isCancelled())
+                {
+                    //任务被取消
+                    Log.e(TAG, "onError cancelled");
+                }
+            }
+
+            @Override
+            protected void onFinally()
+            {
+                super.onFinally();
+                Log.i(TAG, "onFinally");
             }
         }.submit(this);
     }
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancel(this);
+        SDTask.cancelTag(this);
     }
 
 }

@@ -3,7 +3,6 @@ package com.fanwe.lib.task;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.InterruptedIOException;
 import java.util.concurrent.Future;
 
 /**
@@ -14,6 +13,7 @@ public abstract class SDTask implements Runnable
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     private Future<?> mFuture;
+    private boolean mIsCancelled;
 
     public static void runOnUiThread(Runnable runnable)
     {
@@ -32,9 +32,10 @@ public abstract class SDTask implements Runnable
      * @param tag 任务对应的tag
      * @return
      */
-    public final Future<?> submit(Object tag)
+    public synchronized final Future<?> submit(Object tag)
     {
         mFuture = SDTaskManager.getInstance().submit(this, tag);
+        mIsCancelled = false;
         onSubmit();
         return mFuture;
     }
@@ -44,8 +45,9 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public boolean cancel()
+    public synchronized boolean cancel()
     {
+        mIsCancelled = true;
         return SDTaskManager.getInstance().cancel(this);
     }
 
@@ -54,9 +56,9 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public boolean isCancelled()
+    public synchronized boolean isCancelled()
     {
-        return mFuture == null ? false : mFuture.isCancelled();
+        return mIsCancelled || (mFuture == null ? false : mFuture.isCancelled());
     }
 
     /**
@@ -64,7 +66,7 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public boolean isDone()
+    public synchronized boolean isDone()
     {
         return mFuture == null ? false : mFuture.isDone();
     }
@@ -75,9 +77,9 @@ public abstract class SDTask implements Runnable
      * @param tag
      * @return 取消成功的数量
      */
-    public static int cancel(Object tag)
+    public static int cancelTag(Object tag)
     {
-        return SDTaskManager.getInstance().cancel(tag);
+        return SDTaskManager.getInstance().cancelTag(tag);
     }
 
     @Override
@@ -88,13 +90,7 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (Exception e)
         {
-            if (e instanceof InterruptedException || e instanceof InterruptedIOException)
-            {
-                onCancel();
-            } else
-            {
-                onError(e);
-            }
+            onError(e);
         } finally
         {
             onFinally();
@@ -109,11 +105,6 @@ public abstract class SDTask implements Runnable
     protected abstract void onRun() throws Exception;
 
     protected void onError(Exception e)
-    {
-
-    }
-
-    protected void onCancel()
     {
 
     }
