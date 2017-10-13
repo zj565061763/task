@@ -46,7 +46,7 @@ public abstract class SDTask implements Runnable
      * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return
      */
-    public synchronized boolean cancel(boolean mayInterruptIfRunning)
+    public boolean cancel(boolean mayInterruptIfRunning)
     {
         return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
