@@ -27,7 +27,7 @@ public class SDTaskManager
             DEFAULT_KEEP_ALIVE, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
-    private Map<Runnable, TaskInfo> mMapRunnable = new WeakHashMap<>();
+    private Map<Runnable, SDTaskInfo> mMapRunnable = new WeakHashMap<>();
 
     private SDTaskManager()
     {
@@ -48,7 +48,7 @@ public class SDTaskManager
         return sInstance;
     }
 
-    public Future<?> submit(Runnable runnable)
+    public SDTaskInfo submit(Runnable runnable)
     {
         return submit(runnable, null);
     }
@@ -60,32 +60,33 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public synchronized Future<?> submit(Runnable runnable, Object tag)
+    public synchronized SDTaskInfo submit(Runnable runnable, Object tag)
     {
         Future<?> future = DEFAULT_EXECUTOR.submit(runnable);
 
-        TaskInfo info = new TaskInfo();
-        info.future = future;
-        info.tag = tag;
+        SDTaskInfo info = new SDTaskInfo();
+        info.setFuture(future);
+        info.setTag(tag);
+
         mMapRunnable.put(runnable, info);
 
-        return future;
+        return info;
     }
 
-    public synchronized TaskInfo getTaskInfo(Runnable runnable)
+    public synchronized SDTaskInfo getTaskInfo(Runnable runnable)
     {
         return mMapRunnable.get(runnable);
     }
 
-    public synchronized List<Map.Entry<Runnable, TaskInfo>> getTaskInfo(Object tag)
+    public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(Object tag)
     {
-        List<Map.Entry<Runnable, TaskInfo>> listInfo = new ArrayList<>();
+        List<Map.Entry<Runnable, SDTaskInfo>> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
-            for (Map.Entry<Runnable, TaskInfo> item : mMapRunnable.entrySet())
+            for (Map.Entry<Runnable, SDTaskInfo> item : mMapRunnable.entrySet())
             {
-                TaskInfo info = item.getValue();
-                if (tag.equals(info.tag))
+                SDTaskInfo info = item.getValue();
+                if (tag.equals(info.getTag()))
                 {
                     listInfo.add(item);
                 }
@@ -103,12 +104,13 @@ public class SDTaskManager
      */
     public synchronized boolean cancel(Runnable runnable, boolean mayInterruptIfRunning)
     {
-        TaskInfo info = getTaskInfo(runnable);
+        SDTaskInfo info = getTaskInfo(runnable);
         if (info == null)
         {
             return false;
         }
-        info.future.cancel(mayInterruptIfRunning);
+
+        info.cancel(mayInterruptIfRunning);
         mMapRunnable.remove(runnable);
         return true;
     }
@@ -129,24 +131,18 @@ public class SDTaskManager
 
         int count = 0;
 
-        Iterator<Map.Entry<Runnable, TaskInfo>> it = mMapRunnable.entrySet().iterator();
+        Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
         while (it.hasNext())
         {
-            Map.Entry<Runnable, TaskInfo> item = it.next();
-            TaskInfo info = item.getValue();
-            if (tag.equals(info.tag))
+            Map.Entry<Runnable, SDTaskInfo> item = it.next();
+            SDTaskInfo info = item.getValue();
+            if (tag.equals(info.getTag()))
             {
-                info.future.cancel(mayInterruptIfRunning);
+                info.cancel(mayInterruptIfRunning);
                 it.remove();
                 count++;
             }
         }
         return count;
-    }
-
-    public static class TaskInfo
-    {
-        public Future future;
-        public Object tag;
     }
 }

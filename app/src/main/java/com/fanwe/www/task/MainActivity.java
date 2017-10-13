@@ -73,7 +73,10 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancelTag(this, true);
+//        SDTask.cancelTag(this, true);
+
+        int count = SDTask.getTask(this).size();
+        Log.i(TAG, "task count:" + count);
     }
 
 }

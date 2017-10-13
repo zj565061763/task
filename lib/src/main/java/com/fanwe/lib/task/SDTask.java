@@ -6,7 +6,6 @@ import android.os.Looper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * Created by zhengjun on 2017/9/12.
@@ -15,8 +14,7 @@ public abstract class SDTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-    private Future<?> mFuture;
-    private boolean mIsCancelled;
+    private SDTaskInfo mTaskInfo;
 
     public static void runOnUiThread(Runnable runnable)
     {
@@ -35,12 +33,11 @@ public abstract class SDTask implements Runnable
      * @param tag 任务对应的tag
      * @return
      */
-    public synchronized final Future<?> submit(Object tag)
+    public synchronized final SDTaskInfo submit(Object tag)
     {
-        mFuture = SDTaskManager.getInstance().submit(this, tag);
-        mIsCancelled = false;
+        mTaskInfo = SDTaskManager.getInstance().submit(this, tag);
         onSubmit();
-        return mFuture;
+        return mTaskInfo;
     }
 
     /**
@@ -51,7 +48,6 @@ public abstract class SDTask implements Runnable
      */
     public synchronized boolean cancel(boolean mayInterruptIfRunning)
     {
-        mIsCancelled = true;
         return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
 
@@ -62,7 +58,7 @@ public abstract class SDTask implements Runnable
      */
     public synchronized boolean isCancelled()
     {
-        return mIsCancelled || (mFuture == null ? false : mFuture.isCancelled());
+        return mTaskInfo == null ? false : mTaskInfo.isCancelled();
     }
 
     /**
@@ -72,7 +68,7 @@ public abstract class SDTask implements Runnable
      */
     public synchronized boolean isDone()
     {
-        return mFuture == null ? false : mFuture.isDone();
+        return mTaskInfo == null ? false : mTaskInfo.isDone();
     }
 
     /**
@@ -96,10 +92,10 @@ public abstract class SDTask implements Runnable
     public static List<SDTask> getTask(Object tag)
     {
         List<SDTask> listTask = new ArrayList<>();
-        List<Map.Entry<Runnable, SDTaskManager.TaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
+        List<Map.Entry<Runnable, SDTaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
         if (!listInfo.isEmpty())
         {
-            for (Map.Entry<Runnable, SDTaskManager.TaskInfo> item : listInfo)
+            for (Map.Entry<Runnable, SDTaskInfo> item : listInfo)
             {
                 Runnable runnable = item.getKey();
                 if (runnable instanceof SDTask)
