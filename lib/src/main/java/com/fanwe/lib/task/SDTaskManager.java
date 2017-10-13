@@ -89,12 +89,20 @@ public class SDTaskManager
         List<Map.Entry<Runnable, SDTaskInfo>> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
-            for (Map.Entry<Runnable, SDTaskInfo> item : mMapRunnable.entrySet())
+            Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
+            while (it.hasNext())
             {
+                Map.Entry<Runnable, SDTaskInfo> item = it.next();
                 SDTaskInfo info = item.getValue();
-                if (tag.equals(info.getTag()))
+                if (info.isDone())
                 {
-                    listInfo.add(item);
+                    it.remove();
+                } else
+                {
+                    if (tag.equals(info.getTag()))
+                    {
+                        listInfo.add(item);
+                    }
                 }
             }
         }
