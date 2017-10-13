@@ -80,11 +80,6 @@ public abstract class SDTask implements Runnable
         return SDTaskManager.getInstance().cancel(tag);
     }
 
-    protected void onSubmit()
-    {
-
-    }
-
     @Override
     public final void run()
     {
@@ -100,7 +95,15 @@ public abstract class SDTask implements Runnable
             {
                 onError(e);
             }
+        } finally
+        {
+            onFinally();
         }
+    }
+
+    protected void onSubmit()
+    {
+
     }
 
     protected abstract void onRun() throws Exception;
@@ -113,5 +116,9 @@ public abstract class SDTask implements Runnable
     protected void onCancel()
     {
 
+    }
+
+    protected void onFinally()
+    {
     }
 }
