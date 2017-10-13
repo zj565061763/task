@@ -115,7 +115,7 @@ public class SDTaskManager
         {
             return false;
         }
-        
+
         info.cancel(mayInterruptIfRunning);
         mMapRunnable.remove(runnable);
         return true;
@@ -130,28 +130,25 @@ public class SDTaskManager
      */
     public synchronized int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
-        if (mMapRunnable.isEmpty() || tag == null)
-        {
-            return 0;
-        }
-
         int count = 0;
-
-        Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
-        while (it.hasNext())
+        if (tag != null && !mMapRunnable.isEmpty())
         {
-            Map.Entry<Runnable, SDTaskInfo> item = it.next();
-            SDTaskInfo info = item.getValue();
-            if (info.isDone())
+            Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
+            while (it.hasNext())
             {
-                it.remove();
-            } else
-            {
-                if (tag.equals(info.getTag()))
+                Map.Entry<Runnable, SDTaskInfo> item = it.next();
+                SDTaskInfo info = item.getValue();
+                if (info.isDone())
                 {
-                    info.cancel(mayInterruptIfRunning);
                     it.remove();
-                    count++;
+                } else
+                {
+                    if (tag.equals(info.getTag()))
+                    {
+                        info.cancel(mayInterruptIfRunning);
+                        it.remove();
+                        count++;
+                    }
                 }
             }
         }
