@@ -14,13 +14,7 @@ public class SDTaskInfo implements SDTaskFuture
     @Override
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        if (!isDone())
-        {
-            return getFuture().cancel(mayInterruptIfRunning);
-        } else
-        {
-            return false;
-        }
+        return getFuture().cancel(mayInterruptIfRunning);
     }
 
     @Override
