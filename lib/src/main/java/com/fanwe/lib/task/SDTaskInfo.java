@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 public class SDTaskInfo implements SDTaskFuture
 {
     private Future future;
-    private String tag;
+    private Object tag;
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning)
@@ -45,12 +45,12 @@ public class SDTaskInfo implements SDTaskFuture
         this.future = future;
     }
 
-    public String getTag()
+    public Object getTag()
     {
         return tag;
     }
 
-    public void setTag(String tag)
+    public void setTag(Object tag)
     {
         this.tag = tag;
     }

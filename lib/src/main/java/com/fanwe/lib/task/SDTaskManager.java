@@ -60,7 +60,7 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public synchronized SDTaskInfo submit(Runnable runnable, String tag)
+    public synchronized SDTaskInfo submit(Runnable runnable, Object tag)
     {
         Future<?> future = DEFAULT_EXECUTOR.submit(runnable);
 
@@ -84,7 +84,7 @@ public class SDTaskManager
         return info;
     }
 
-    public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(String tag)
+    public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(Object tag)
     {
         List<Map.Entry<Runnable, SDTaskInfo>> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
@@ -136,7 +136,7 @@ public class SDTaskManager
      * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return 申请取消成功的数量
      */
-    public synchronized int cancelTag(String tag, boolean mayInterruptIfRunning)
+    public synchronized int cancelTag(Object tag, boolean mayInterruptIfRunning)
     {
         int count = 0;
         if (tag != null && !mMapRunnable.isEmpty())
