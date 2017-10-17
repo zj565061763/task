@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
             {
                 super.onSubmit();
                 //任务被提交到线程池
-                Log.i(TAG, "onSubmit current count---------->" + SDTask.getTask(MainActivity.this).size());
+                Log.i(TAG, "onSubmit current count---------->" + SDTask.getTask(TAG).size());
             }
 
             @Override
@@ -69,12 +69,12 @@ public class MainActivity extends AppCompatActivity
                 super.onFinally();
                 Log.i(TAG, "onFinally");
             }
-        }.submit(this);
+        }.submit(TAG);
     }
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancelTag(this, true);
+        SDTask.cancelTag(TAG, true);
     }
 
 }
