@@ -18,13 +18,13 @@ public class SDTaskManager
 {
     private static SDTaskManager sInstance;
 
-    private static final int DEFAULT_CORE_POOL_SIZE = 3;
-    private static final int DEFAULT_MAX_POOL_SIZE = 16;
-    private static final int DEFAULT_KEEP_ALIVE = 1;
+    private static final int CORE_POOL_SIZE = 3;
+    private static final int MAX_POOL_SIZE = 64;
+    private static final int KEEP_ALIVE = 1;
 
     private static final ExecutorService DEFAULT_EXECUTOR = new ThreadPoolExecutor(
-            DEFAULT_CORE_POOL_SIZE, DEFAULT_MAX_POOL_SIZE,
-            DEFAULT_KEEP_ALIVE, TimeUnit.SECONDS,
+            CORE_POOL_SIZE, MAX_POOL_SIZE,
+            KEEP_ALIVE, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
     private Map<Runnable, SDTaskInfo> mMapRunnable = new WeakHashMap<>();
