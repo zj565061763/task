@@ -6,24 +6,30 @@ import java.util.concurrent.Future;
  * Created by zhengjun on 2017/10/13.
  */
 
-public class SDTaskInfo
+public class SDTaskInfo implements SDTaskFuture
 {
     private Future future;
     private Object tag;
 
-    public void cancel(boolean mayInterruptIfRunning)
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning)
     {
         if (!isDone())
         {
-            getFuture().cancel(mayInterruptIfRunning);
+            return getFuture().cancel(mayInterruptIfRunning);
+        } else
+        {
+            return false;
         }
     }
 
+    @Override
     public boolean isCancelled()
     {
         return getFuture().isCancelled();
     }
 
+    @Override
     public boolean isDone()
     {
         return getFuture().isDone();
