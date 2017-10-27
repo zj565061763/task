@@ -6,32 +6,29 @@ import java.util.concurrent.Future;
  * Created by zhengjun on 2017/10/13.
  */
 
-public class SDTaskInfo implements SDTaskFuture
+public class SDTaskInfo
 {
     private Future future;
-    private Object tag;
+    private String tag;
 
-    @Override
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        return getFuture().cancel(mayInterruptIfRunning);
+        return future.cancel(mayInterruptIfRunning);
     }
 
-    @Override
     public boolean isCancelled()
     {
-        return getFuture().isCancelled();
+        return future.isCancelled();
     }
 
-    @Override
     public boolean isDone()
     {
-        return getFuture().isDone();
+        return future.isDone();
     }
 
-    private Future getFuture()
+    public String getTag()
     {
-        return future;
+        return tag;
     }
 
     void setFuture(Future future)
@@ -39,12 +36,7 @@ public class SDTaskInfo implements SDTaskFuture
         this.future = future;
     }
 
-    public Object getTag()
-    {
-        return tag;
-    }
-
-    public void setTag(Object tag)
+    void setTag(String tag)
     {
         this.tag = tag;
     }

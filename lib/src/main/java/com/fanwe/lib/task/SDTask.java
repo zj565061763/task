@@ -33,7 +33,7 @@ public abstract class SDTask implements Runnable
      * @param tag 任务对应的tag
      * @return
      */
-    public synchronized final SDTaskInfo submit(Object tag)
+    public synchronized final SDTaskInfo submit(String tag)
     {
         mTaskInfo = SDTaskManager.getInstance().submit(this, tag);
         onSubmit();
@@ -78,7 +78,7 @@ public abstract class SDTask implements Runnable
      * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
      * @return 取消成功的数量
      */
-    public static int cancelTag(Object tag, boolean mayInterruptIfRunning)
+    public static int cancelTag(String tag, boolean mayInterruptIfRunning)
     {
         return SDTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
     }
@@ -89,7 +89,7 @@ public abstract class SDTask implements Runnable
      * @param tag
      * @return
      */
-    public static List<SDTask> getTask(Object tag)
+    public static List<SDTask> getTask(String tag)
     {
         List<SDTask> listTask = new ArrayList<>();
         List<Map.Entry<Runnable, SDTaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
