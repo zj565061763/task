@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
             {
                 super.onError(e);
                 //任务异常回调
-                Log.e(TAG, "onError");
+                Log.e(TAG, "onError:" + e);
                 if (isCancelled())
                 {
                     //任务被取消

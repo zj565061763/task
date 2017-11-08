@@ -15,6 +15,8 @@ public abstract class SDTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
+    private volatile Exception mException;
+
     public static void runOnUiThread(Runnable runnable)
     {
         if (Looper.myLooper() == Looper.getMainLooper())
@@ -76,7 +78,10 @@ public abstract class SDTask implements Runnable
      */
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
+        boolean result = SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
+        MAIN_HANDLER.removeCallbacks(mErrorRunnable);
+        MAIN_HANDLER.removeCallbacks(mFinallyRunnable);
+        return result;
     }
 
     /**
@@ -136,6 +141,11 @@ public abstract class SDTask implements Runnable
         return listTask;
     }
 
+    public Exception getException()
+    {
+        return mException;
+    }
+
     @Override
     public final void run()
     {
@@ -144,36 +154,40 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (final Exception e)
         {
-            notifyError(e);
+            mException = e;
+            runOnUiThread(getErrorRunnable());
         } finally
         {
-            notifyFinally();
+            runOnUiThread(mFinallyRunnable);
         }
     }
 
-    private void notifyError(final Exception e)
+    private Runnable mErrorRunnable;
+
+    private Runnable getErrorRunnable()
     {
-        runOnUiThread(new Runnable()
+        if (mErrorRunnable == null)
         {
-            @Override
-            public void run()
+            mErrorRunnable = new Runnable()
             {
-                onError(e);
-            }
-        });
+                @Override
+                public void run()
+                {
+                    onError(mException);
+                }
+            };
+        }
+        return mErrorRunnable;
     }
 
-    private void notifyFinally()
+    private Runnable mFinallyRunnable = new Runnable()
     {
-        runOnUiThread(new Runnable()
+        @Override
+        public void run()
         {
-            @Override
-            public void run()
-            {
-                onFinally();
-            }
-        });
-    }
+            onFinally();
+        }
+    };
 
     protected void onSubmit()
     {
