@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,6 +27,8 @@ public class SDTaskManager
             CORE_POOL_SIZE, MAX_POOL_SIZE,
             KEEP_ALIVE, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>());
+
+    private static final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private Map<Runnable, SDTaskInfo> mMapRunnable = new WeakHashMap<>();
 
@@ -48,13 +51,19 @@ public class SDTaskManager
         return sInstance;
     }
 
+    /**
+     * 提交要执行的Runnable到默认的线程池
+     *
+     * @param runnable
+     * @return
+     */
     public SDTaskInfo submit(Runnable runnable)
     {
         return submit(runnable, null);
     }
 
     /**
-     * 提交要执行的Runnable
+     * 提交要执行的Runnable到默认的线程池
      *
      * @param runnable 要执行的Runnable
      * @param tag      对应的tag，可用于取消
@@ -62,7 +71,43 @@ public class SDTaskManager
      */
     public synchronized SDTaskInfo submit(Runnable runnable, String tag)
     {
-        Future<?> future = DEFAULT_EXECUTOR.submit(runnable);
+        return submit(runnable, DEFAULT_EXECUTOR, tag);
+    }
+
+    /**
+     * 提交要执行的Runnable到单线程线程池
+     *
+     * @param runnable
+     * @return
+     */
+    public SDTaskInfo submitSingle(Runnable runnable)
+    {
+        return submitSingle(runnable, null);
+    }
+
+    /**
+     * 提交要执行的Runnable到单线程线程池
+     *
+     * @param runnable 要执行的Runnable
+     * @param tag      对应的tag，可用于取消
+     * @return
+     */
+    public synchronized SDTaskInfo submitSingle(Runnable runnable, String tag)
+    {
+        return submit(runnable, SINGLE_EXECUTOR, tag);
+    }
+
+    /**
+     * 提交要执行的Runnable
+     *
+     * @param runnable        要执行的Runnable
+     * @param executorService 要执行Runnable的线程池
+     * @param tag             对应的tag，可用于取消
+     * @return
+     */
+    public synchronized SDTaskInfo submit(Runnable runnable, ExecutorService executorService, String tag)
+    {
+        Future<?> future = executorService.submit(runnable);
 
         SDTaskInfo info = new SDTaskInfo();
         info.setFuture(future);
@@ -75,13 +120,7 @@ public class SDTaskManager
 
     public synchronized SDTaskInfo getTaskInfo(Runnable runnable)
     {
-        SDTaskInfo info = mMapRunnable.get(runnable);
-        if (info != null && info.isDone())
-        {
-            mMapRunnable.remove(runnable);
-            info = null;
-        }
-        return info;
+        return mMapRunnable.get(runnable);
     }
 
     public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(String tag)
@@ -94,15 +133,10 @@ public class SDTaskManager
             {
                 Map.Entry<Runnable, SDTaskInfo> item = it.next();
                 SDTaskInfo info = item.getValue();
-                if (info.isDone())
+
+                if (tag.equals(info.getTag()))
                 {
-                    it.remove();
-                } else
-                {
-                    if (tag.equals(info.getTag()))
-                    {
-                        listInfo.add(item);
-                    }
+                    listInfo.add(item);
                 }
             }
         }
@@ -124,9 +158,7 @@ public class SDTaskManager
             return false;
         }
 
-        info.cancel(mayInterruptIfRunning);
-        mMapRunnable.remove(runnable);
-        return true;
+        return info.cancel(mayInterruptIfRunning);
     }
 
     /**
@@ -146,15 +178,14 @@ public class SDTaskManager
             {
                 Map.Entry<Runnable, SDTaskInfo> item = it.next();
                 SDTaskInfo info = item.getValue();
+
                 if (info.isDone())
                 {
-                    it.remove();
+                    continue;
                 } else
                 {
-                    if (tag.equals(info.getTag()))
+                    if (tag.equals(info.getTag()) && info.cancel(mayInterruptIfRunning))
                     {
-                        info.cancel(mayInterruptIfRunning);
-                        it.remove();
                         count++;
                     }
                 }

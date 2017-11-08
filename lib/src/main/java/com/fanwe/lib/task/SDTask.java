@@ -6,6 +6,7 @@ import android.os.Looper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by zhengjun on 2017/9/12.
@@ -28,7 +29,7 @@ public abstract class SDTask implements Runnable
     }
 
     /**
-     * 提交任务
+     * 提交任务到默认的线程池
      *
      * @param tag 任务对应的tag
      * @return
@@ -36,6 +37,33 @@ public abstract class SDTask implements Runnable
     public synchronized final SDTaskInfo submit(String tag)
     {
         mTaskInfo = SDTaskManager.getInstance().submit(this, tag);
+        onSubmit();
+        return mTaskInfo;
+    }
+
+    /**
+     * 提交任务到单线程线程池
+     *
+     * @param tag 任务对应的tag
+     * @return
+     */
+    public synchronized final SDTaskInfo submitSingle(String tag)
+    {
+        mTaskInfo = SDTaskManager.getInstance().submitSingle(this, tag);
+        onSubmit();
+        return mTaskInfo;
+    }
+
+    /**
+     * 提交要执行的任务
+     *
+     * @param executorService 要执行任务的线程池
+     * @param tag             任务对应的tag
+     * @return
+     */
+    public synchronized final SDTaskInfo submit(ExecutorService executorService, String tag)
+    {
+        mTaskInfo = SDTaskManager.getInstance().submit(this, executorService, tag);
         onSubmit();
         return mTaskInfo;
     }
@@ -92,6 +120,7 @@ public abstract class SDTask implements Runnable
     public static List<SDTask> getTask(String tag)
     {
         List<SDTask> listTask = new ArrayList<>();
+
         List<Map.Entry<Runnable, SDTaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
         if (!listInfo.isEmpty())
         {
