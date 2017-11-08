@@ -69,7 +69,7 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public synchronized SDTaskInfo submit(Runnable runnable, String tag)
+    public SDTaskInfo submit(Runnable runnable, String tag)
     {
         return submit(runnable, DEFAULT_EXECUTOR, tag);
     }
@@ -92,7 +92,7 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public synchronized SDTaskInfo submitSingle(Runnable runnable, String tag)
+    public SDTaskInfo submitSingle(Runnable runnable, String tag)
     {
         return submit(runnable, SINGLE_EXECUTOR, tag);
     }

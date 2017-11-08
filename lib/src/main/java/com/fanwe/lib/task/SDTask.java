@@ -37,11 +37,10 @@ public abstract class SDTask implements Runnable
      * @param tag 任务对应的tag
      * @return
      */
-    public synchronized final SDTaskInfo submit(String tag)
+    public final SDTaskInfo submit(String tag)
     {
-        SDTaskManager.getInstance().submit(this, tag);
         onSubmit();
-        return getTaskInfo();
+        return SDTaskManager.getInstance().submit(this, tag);
     }
 
     /**
@@ -50,11 +49,10 @@ public abstract class SDTask implements Runnable
      * @param tag 任务对应的tag
      * @return
      */
-    public synchronized final SDTaskInfo submitSingle(String tag)
+    public final SDTaskInfo submitSingle(String tag)
     {
-        SDTaskManager.getInstance().submitSingle(this, tag);
         onSubmit();
-        return getTaskInfo();
+        return SDTaskManager.getInstance().submitSingle(this, tag);
     }
 
     /**
@@ -64,11 +62,10 @@ public abstract class SDTask implements Runnable
      * @param tag             任务对应的tag
      * @return
      */
-    public synchronized final SDTaskInfo submit(ExecutorService executorService, String tag)
+    public final SDTaskInfo submit(ExecutorService executorService, String tag)
     {
-        SDTaskManager.getInstance().submit(this, executorService, tag);
         onSubmit();
-        return getTaskInfo();
+        return SDTaskManager.getInstance().submit(this, executorService, tag);
     }
 
     /**
@@ -87,7 +84,7 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public synchronized boolean isCancelled()
+    public boolean isCancelled()
     {
         return getTaskInfo() == null ? false : getTaskInfo().isCancelled();
     }
@@ -97,7 +94,7 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public synchronized boolean isDone()
+    public boolean isDone()
     {
         return getTaskInfo() == null ? false : getTaskInfo().isDone();
     }
