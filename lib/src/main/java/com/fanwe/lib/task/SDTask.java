@@ -15,8 +15,6 @@ public abstract class SDTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-    private volatile Exception mException;
-
     public static void runOnUiThread(Runnable runnable)
     {
         if (Looper.myLooper() == Looper.getMainLooper())
@@ -78,10 +76,7 @@ public abstract class SDTask implements Runnable
      */
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        boolean result = SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
-        MAIN_HANDLER.removeCallbacks(mErrorRunnable);
-        MAIN_HANDLER.removeCallbacks(mFinallyRunnable);
-        return result;
+        return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
 
     /**
@@ -141,11 +136,6 @@ public abstract class SDTask implements Runnable
         return listTask;
     }
 
-    public Exception getException()
-    {
-        return mException;
-    }
-
     @Override
     public final void run()
     {
@@ -154,51 +144,35 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (final Exception e)
         {
-            mException = e;
-            runOnUiThread(getErrorRunnable());
-        } finally
-        {
-            runOnUiThread(mFinallyRunnable);
-        }
-    }
-
-    private Runnable mErrorRunnable;
-
-    private Runnable getErrorRunnable()
-    {
-        if (mErrorRunnable == null)
-        {
-            mErrorRunnable = new Runnable()
+            runOnUiThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    onError(mException);
+                    onError(e);
                 }
-            };
-        }
-        return mErrorRunnable;
-    }
-
-    private Runnable mFinallyRunnable = new Runnable()
-    {
-        @Override
-        public void run()
+            });
+        } finally
         {
-            onFinally();
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    onFinally();
+                }
+            });
         }
-    };
+    }
 
     protected void onSubmit()
     {
-
     }
 
     protected abstract void onRun() throws Exception;
 
     protected void onError(Exception e)
     {
-
     }
 
     protected void onFinally()
