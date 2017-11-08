@@ -15,8 +15,6 @@ public abstract class SDTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-    private SDTaskInfo mTaskInfo;
-
     public static void runOnUiThread(Runnable runnable)
     {
         if (Looper.myLooper() == Looper.getMainLooper())
@@ -28,6 +26,11 @@ public abstract class SDTask implements Runnable
         }
     }
 
+    private SDTaskInfo getTaskInfo()
+    {
+        return SDTaskManager.getInstance().getTaskInfo(this);
+    }
+
     /**
      * 提交任务到默认的线程池
      *
@@ -36,9 +39,9 @@ public abstract class SDTask implements Runnable
      */
     public synchronized final SDTaskInfo submit(String tag)
     {
-        mTaskInfo = SDTaskManager.getInstance().submit(this, tag);
+        SDTaskManager.getInstance().submit(this, tag);
         onSubmit();
-        return mTaskInfo;
+        return getTaskInfo();
     }
 
     /**
@@ -49,9 +52,9 @@ public abstract class SDTask implements Runnable
      */
     public synchronized final SDTaskInfo submitSingle(String tag)
     {
-        mTaskInfo = SDTaskManager.getInstance().submitSingle(this, tag);
+        SDTaskManager.getInstance().submitSingle(this, tag);
         onSubmit();
-        return mTaskInfo;
+        return getTaskInfo();
     }
 
     /**
@@ -63,9 +66,9 @@ public abstract class SDTask implements Runnable
      */
     public synchronized final SDTaskInfo submit(ExecutorService executorService, String tag)
     {
-        mTaskInfo = SDTaskManager.getInstance().submit(this, executorService, tag);
+        SDTaskManager.getInstance().submit(this, executorService, tag);
         onSubmit();
-        return mTaskInfo;
+        return getTaskInfo();
     }
 
     /**
@@ -86,7 +89,7 @@ public abstract class SDTask implements Runnable
      */
     public synchronized boolean isCancelled()
     {
-        return mTaskInfo == null ? false : mTaskInfo.isCancelled();
+        return getTaskInfo() == null ? false : getTaskInfo().isCancelled();
     }
 
     /**
@@ -96,7 +99,7 @@ public abstract class SDTask implements Runnable
      */
     public synchronized boolean isDone()
     {
-        return mTaskInfo == null ? false : mTaskInfo.isDone();
+        return getTaskInfo() == null ? false : getTaskInfo().isDone();
     }
 
     /**
