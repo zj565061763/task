@@ -15,15 +15,17 @@ public abstract class SDTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-    public static void runOnUiThread(Runnable runnable)
+    private String mTag;
+
+    public SDTask setTag(String tag)
     {
-        if (Looper.myLooper() == Looper.getMainLooper())
-        {
-            runnable.run();
-        } else
-        {
-            MAIN_HANDLER.post(runnable);
-        }
+        mTag = tag;
+        return this;
+    }
+
+    public String getTag()
+    {
+        return mTag;
     }
 
     private SDTaskInfo getTaskInfo()
@@ -32,40 +34,37 @@ public abstract class SDTask implements Runnable
     }
 
     /**
-     * 提交任务到默认的线程池
+     * 提交任务
      *
-     * @param tag 任务对应的tag
      * @return
      */
-    public final SDTaskInfo submit(String tag)
+    public final SDTaskInfo submit()
     {
         onSubmit();
-        return SDTaskManager.getInstance().submit(this, tag);
+        return SDTaskManager.getInstance().submit(this, getTag());
     }
 
     /**
-     * 提交任务到单线程线程池
+     * 提交任务，按提交的顺序一个个执行
      *
-     * @param tag 任务对应的tag
      * @return
      */
-    public final SDTaskInfo submitSingle(String tag)
+    public final SDTaskInfo submitSequence()
     {
         onSubmit();
-        return SDTaskManager.getInstance().submitSingle(this, tag);
+        return SDTaskManager.getInstance().submitSequence(this, getTag());
     }
 
     /**
      * 提交要执行的任务
      *
      * @param executorService 要执行任务的线程池
-     * @param tag             任务对应的tag
      * @return
      */
-    public final SDTaskInfo submit(ExecutorService executorService, String tag)
+    public final SDTaskInfo submit(ExecutorService executorService)
     {
         onSubmit();
-        return SDTaskManager.getInstance().submit(this, executorService, tag);
+        return SDTaskManager.getInstance().submit(this, executorService, getTag());
     }
 
     /**
@@ -187,5 +186,16 @@ public abstract class SDTask implements Runnable
 
     protected void onFinally()
     {
+    }
+
+    public static void runOnUiThread(Runnable runnable)
+    {
+        if (Looper.myLooper() == Looper.getMainLooper())
+        {
+            runnable.run();
+        } else
+        {
+            MAIN_HANDLER.post(runnable);
+        }
     }
 }

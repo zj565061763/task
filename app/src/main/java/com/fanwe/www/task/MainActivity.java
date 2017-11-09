@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
             {
                 Log.i(TAG, "onRun");
                 long i = 0;
-                while (i < Long.MAX_VALUE)
+                while (i < 5)
                 {
                     boolean isCancelled = isCancelled();
                     i++;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
                 super.onFinally();
                 Log.i(TAG, "onFinally");
             }
-        }.submit(TAG);
+        }.setTag(TAG).submit();
     }
 
     public void onClickCancelTask(View view)

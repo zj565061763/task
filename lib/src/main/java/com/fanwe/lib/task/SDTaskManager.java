@@ -52,7 +52,7 @@ public class SDTaskManager
     }
 
     /**
-     * 提交要执行的Runnable到默认的线程池
+     * 提交要执行的Runnable
      *
      * @param runnable
      * @return
@@ -63,7 +63,7 @@ public class SDTaskManager
     }
 
     /**
-     * 提交要执行的Runnable到默认的线程池
+     * 提交要执行的Runnable
      *
      * @param runnable 要执行的Runnable
      * @param tag      对应的tag，可用于取消
@@ -75,24 +75,24 @@ public class SDTaskManager
     }
 
     /**
-     * 提交要执行的Runnable到单线程线程池
+     * 提交要执行的Runnable，按提交的顺序一个个执行
      *
      * @param runnable
      * @return
      */
-    public SDTaskInfo submitSingle(Runnable runnable)
+    public SDTaskInfo submitSequence(Runnable runnable)
     {
-        return submitSingle(runnable, null);
+        return submitSequence(runnable, null);
     }
 
     /**
-     * 提交要执行的Runnable到单线程线程池
+     * 提交要执行的Runnable，按提交的顺序一个个执行
      *
      * @param runnable 要执行的Runnable
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public SDTaskInfo submitSingle(Runnable runnable, String tag)
+    public SDTaskInfo submitSequence(Runnable runnable, String tag)
     {
         return submit(runnable, SINGLE_EXECUTOR, tag);
     }
