@@ -19,7 +19,10 @@ public abstract class SDTask implements Runnable
 
     public SDTask setTag(String tag)
     {
-        mTag = tag;
+        if (mTag == null)
+        {
+            mTag = tag;
+        }
         return this;
     }
 
