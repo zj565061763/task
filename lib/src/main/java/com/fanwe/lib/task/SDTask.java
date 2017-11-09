@@ -164,20 +164,41 @@ public abstract class SDTask implements Runnable
         }
     }
 
+    /**
+     * 任务提交回调
+     */
     protected void onSubmit()
     {
     }
 
+    /**
+     * 任务执行回调
+     *
+     * @throws Exception
+     */
     protected abstract void onRun() throws Exception;
 
+    /**
+     * 任务执行异常回调
+     *
+     * @param e
+     */
     protected void onError(Exception e)
     {
     }
 
+    /**
+     * 任务执行完成回调
+     */
     protected void onFinally()
     {
     }
 
+    /**
+     * 主线程执行Runnable
+     *
+     * @param runnable
+     */
     public static void runOnUiThread(Runnable runnable)
     {
         if (Looper.myLooper() == Looper.getMainLooper())

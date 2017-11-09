@@ -118,11 +118,23 @@ public class SDTaskManager
         return info;
     }
 
+    /**
+     * 返回Runnable对应的任务信息
+     *
+     * @param runnable
+     * @return
+     */
     public synchronized SDTaskInfo getTaskInfo(Runnable runnable)
     {
         return mMapRunnable.get(runnable);
     }
 
+    /**
+     * 返回tag对应的任务信息列表
+     *
+     * @param tag
+     * @return
+     */
     public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(String tag)
     {
         List<Map.Entry<Runnable, SDTaskInfo>> listInfo = new ArrayList<>();
