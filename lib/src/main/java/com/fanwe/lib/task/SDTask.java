@@ -17,6 +17,12 @@ public abstract class SDTask implements Runnable
 
     private String mTag;
 
+    /**
+     * 设置tag，设置后不能修改
+     *
+     * @param tag
+     * @return
+     */
     public SDTask setTag(String tag)
     {
         if (mTag == null)
@@ -26,6 +32,11 @@ public abstract class SDTask implements Runnable
         return this;
     }
 
+    /**
+     * 返回任务对应的tag
+     *
+     * @return
+     */
     public String getTag()
     {
         return mTag;
