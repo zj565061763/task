@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 20171109
-        versionName "1.0.21"
+        versionName "1.0.22"
 
     }
     buildTypes {
@@ -31,8 +31,12 @@ dependencies {
 }
 
 // 指定编码
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+tasks.withType(Javadoc) {
+    options {
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        failOnError false
+    }
 }
 
 // 打包源码
