@@ -75,10 +75,10 @@ public abstract class SDTask implements Runnable
      * @param executorService 要执行任务的线程池
      * @return
      */
-    public final SDTaskInfo submit(ExecutorService executorService)
+    public final SDTaskInfo submitTo(ExecutorService executorService)
     {
         onSubmit();
-        return SDTaskManager.getInstance().submit(this, executorService, getTag());
+        return SDTaskManager.getInstance().submitTo(this, executorService, getTag());
     }
 
     /**

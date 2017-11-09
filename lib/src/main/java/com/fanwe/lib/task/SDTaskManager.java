@@ -71,7 +71,7 @@ public class SDTaskManager
      */
     public SDTaskInfo submit(Runnable runnable, String tag)
     {
-        return submit(runnable, DEFAULT_EXECUTOR, tag);
+        return submitTo(runnable, DEFAULT_EXECUTOR, tag);
     }
 
     /**
@@ -94,7 +94,7 @@ public class SDTaskManager
      */
     public SDTaskInfo submitSequence(Runnable runnable, String tag)
     {
-        return submit(runnable, SINGLE_EXECUTOR, tag);
+        return submitTo(runnable, SINGLE_EXECUTOR, tag);
     }
 
     /**
@@ -105,7 +105,7 @@ public class SDTaskManager
      * @param tag             对应的tag，可用于取消
      * @return
      */
-    public synchronized SDTaskInfo submit(Runnable runnable, ExecutorService executorService, String tag)
+    public synchronized SDTaskInfo submitTo(Runnable runnable, ExecutorService executorService, String tag)
     {
         Future<?> future = executorService.submit(runnable);
 
