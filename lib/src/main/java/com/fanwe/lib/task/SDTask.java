@@ -165,21 +165,21 @@ public abstract class SDTask implements Runnable
     }
 
     /**
-     * 任务提交回调
+     * 任务提交回调（任务提交线程）
      */
     protected void onSubmit()
     {
     }
 
     /**
-     * 任务执行回调
+     * 任务执行回调（任务执行线程）
      *
      * @throws Exception
      */
     protected abstract void onRun() throws Exception;
 
     /**
-     * 任务执行异常回调
+     * 任务执行异常回调（任务执行线程）
      *
      * @param e
      */
@@ -188,7 +188,7 @@ public abstract class SDTask implements Runnable
     }
 
     /**
-     * 任务执行完成回调
+     * 任务执行完成回调（任务执行线程）
      */
     protected void onFinally()
     {
