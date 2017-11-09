@@ -146,24 +146,10 @@ public abstract class SDTask implements Runnable
             onRun();
         } catch (final Exception e)
         {
-            runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    onError(e);
-                }
-            });
+            onError(e);
         } finally
         {
-            runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    onFinally();
-                }
-            });
+            onFinally();
         }
     }
 
