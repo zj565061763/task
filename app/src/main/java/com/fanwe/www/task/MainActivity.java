@@ -28,13 +28,13 @@ public class MainActivity extends AppCompatActivity
             {
                 super.onSubmit();
                 //任务被提交到线程池
-                Log.i(TAG, "onSubmit current count---------->" + SDTask.getTask(TAG).size());
+                Log.i(TAG, "onSubmit count---------->" + SDTask.getTask(TAG).size());
             }
 
             @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "onRun");
+                Log.i(TAG, "onRun:" + Thread.currentThread().getName());
                 long i = 0;
                 while (i < 5)
                 {

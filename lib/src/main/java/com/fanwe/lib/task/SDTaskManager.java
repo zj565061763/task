@@ -8,9 +8,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zhengjun on 2017/9/12.
@@ -19,15 +16,7 @@ public class SDTaskManager
 {
     private static SDTaskManager sInstance;
 
-    private static final int CORE_POOL_SIZE = 3;
-    private static final int MAX_POOL_SIZE = Integer.MAX_VALUE;
-    private static final int KEEP_ALIVE = 1;
-
-    private static final ExecutorService DEFAULT_EXECUTOR = new ThreadPoolExecutor(
-            CORE_POOL_SIZE, MAX_POOL_SIZE,
-            KEEP_ALIVE, TimeUnit.SECONDS,
-            new SynchronousQueue<Runnable>());
-
+    private static final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
     private static final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private Map<Runnable, SDTaskInfo> mMapRunnable = new WeakHashMap<>();
