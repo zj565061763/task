@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.lib.task.SDTask;
+import com.fanwe.lib.task.FTask;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -21,14 +21,14 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickAddTask(View view)
     {
-        new SDTask()
+        new FTask()
         {
             @Override
             protected void onSubmit()
             {
                 super.onSubmit();
                 //任务被提交到线程池
-                Log.i(TAG, "onSubmit count---------->" + SDTask.getTask(TAG).size());
+                Log.i(TAG, "onSubmit count---------->" + FTask.getTask(TAG).size());
             }
 
             @Override
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickCancelTask(View view)
     {
-        SDTask.cancelTag(TAG, true);
+        FTask.cancelTag(TAG, true);
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
  * Created by zhengjun on 2017/10/13.
  */
 
-public class SDTaskInfo
+public class FTaskInfo
 {
     private Future future;
     private String tag;

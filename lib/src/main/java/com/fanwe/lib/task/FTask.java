@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Created by zhengjun on 2017/9/12.
  */
-public abstract class SDTask implements Runnable
+public abstract class FTask implements Runnable
 {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
@@ -23,7 +23,7 @@ public abstract class SDTask implements Runnable
      * @param tag
      * @return
      */
-    public SDTask setTag(String tag)
+    public FTask setTag(String tag)
     {
         if (mTag == null)
         {
@@ -42,9 +42,9 @@ public abstract class SDTask implements Runnable
         return mTag;
     }
 
-    private SDTaskInfo getTaskInfo()
+    private FTaskInfo getTaskInfo()
     {
-        return SDTaskManager.getInstance().getTaskInfo(this);
+        return FTaskManager.getInstance().getTaskInfo(this);
     }
 
     /**
@@ -52,10 +52,10 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public final SDTaskInfo submit()
+    public final FTaskInfo submit()
     {
         onSubmit();
-        return SDTaskManager.getInstance().submit(this, getTag());
+        return FTaskManager.getInstance().submit(this, getTag());
     }
 
     /**
@@ -63,10 +63,10 @@ public abstract class SDTask implements Runnable
      *
      * @return
      */
-    public final SDTaskInfo submitSequence()
+    public final FTaskInfo submitSequence()
     {
         onSubmit();
-        return SDTaskManager.getInstance().submitSequence(this, getTag());
+        return FTaskManager.getInstance().submitSequence(this, getTag());
     }
 
     /**
@@ -75,10 +75,10 @@ public abstract class SDTask implements Runnable
      * @param executorService 要执行任务的线程池
      * @return
      */
-    public final SDTaskInfo submitTo(ExecutorService executorService)
+    public final FTaskInfo submitTo(ExecutorService executorService)
     {
         onSubmit();
-        return SDTaskManager.getInstance().submitTo(this, executorService, getTag());
+        return FTaskManager.getInstance().submitTo(this, executorService, getTag());
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class SDTask implements Runnable
      */
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        return SDTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
+        return FTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class SDTask implements Runnable
      */
     public static int cancelTag(String tag, boolean mayInterruptIfRunning)
     {
-        return SDTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
+        return FTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
     }
 
     /**
@@ -130,19 +130,19 @@ public abstract class SDTask implements Runnable
      * @param tag
      * @return
      */
-    public static List<SDTask> getTask(String tag)
+    public static List<FTask> getTask(String tag)
     {
-        List<SDTask> listTask = new ArrayList<>();
+        List<FTask> listTask = new ArrayList<>();
 
-        List<Map.Entry<Runnable, SDTaskInfo>> listInfo = SDTaskManager.getInstance().getTaskInfo(tag);
+        List<Map.Entry<Runnable, FTaskInfo>> listInfo = FTaskManager.getInstance().getTaskInfo(tag);
         if (!listInfo.isEmpty())
         {
-            for (Map.Entry<Runnable, SDTaskInfo> item : listInfo)
+            for (Map.Entry<Runnable, FTaskInfo> item : listInfo)
             {
                 Runnable runnable = item.getKey();
-                if (runnable instanceof SDTask)
+                if (runnable instanceof FTask)
                 {
-                    listTask.add((SDTask) runnable);
+                    listTask.add((FTask) runnable);
                 }
             }
         }

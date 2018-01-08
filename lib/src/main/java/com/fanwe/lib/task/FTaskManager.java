@@ -12,28 +12,28 @@ import java.util.concurrent.Future;
 /**
  * Created by zhengjun on 2017/9/12.
  */
-public class SDTaskManager
+public class FTaskManager
 {
-    private static SDTaskManager sInstance;
+    private static FTaskManager sInstance;
 
     private static final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
     private static final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private Map<Runnable, SDTaskInfo> mMapRunnable = new WeakHashMap<>();
+    private Map<Runnable, FTaskInfo> mMapRunnable = new WeakHashMap<>();
 
-    private SDTaskManager()
+    private FTaskManager()
     {
     }
 
-    public static SDTaskManager getInstance()
+    public static FTaskManager getInstance()
     {
         if (sInstance == null)
         {
-            synchronized (SDTaskManager.class)
+            synchronized (FTaskManager.class)
             {
                 if (sInstance == null)
                 {
-                    sInstance = new SDTaskManager();
+                    sInstance = new FTaskManager();
                 }
             }
         }
@@ -46,7 +46,7 @@ public class SDTaskManager
      * @param runnable
      * @return
      */
-    public SDTaskInfo submit(Runnable runnable)
+    public FTaskInfo submit(Runnable runnable)
     {
         return submit(runnable, null);
     }
@@ -58,7 +58,7 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public SDTaskInfo submit(Runnable runnable, String tag)
+    public FTaskInfo submit(Runnable runnable, String tag)
     {
         return submitTo(runnable, DEFAULT_EXECUTOR, tag);
     }
@@ -69,7 +69,7 @@ public class SDTaskManager
      * @param runnable
      * @return
      */
-    public SDTaskInfo submitSequence(Runnable runnable)
+    public FTaskInfo submitSequence(Runnable runnable)
     {
         return submitSequence(runnable, null);
     }
@@ -81,7 +81,7 @@ public class SDTaskManager
      * @param tag      对应的tag，可用于取消
      * @return
      */
-    public SDTaskInfo submitSequence(Runnable runnable, String tag)
+    public FTaskInfo submitSequence(Runnable runnable, String tag)
     {
         return submitTo(runnable, SINGLE_EXECUTOR, tag);
     }
@@ -94,11 +94,11 @@ public class SDTaskManager
      * @param tag             对应的tag，可用于取消
      * @return
      */
-    public synchronized SDTaskInfo submitTo(Runnable runnable, ExecutorService executorService, String tag)
+    public synchronized FTaskInfo submitTo(Runnable runnable, ExecutorService executorService, String tag)
     {
         Future<?> future = executorService.submit(runnable);
 
-        SDTaskInfo info = new SDTaskInfo();
+        FTaskInfo info = new FTaskInfo();
         info.setFuture(future);
         info.setTag(tag);
 
@@ -113,7 +113,7 @@ public class SDTaskManager
      * @param runnable
      * @return
      */
-    public synchronized SDTaskInfo getTaskInfo(Runnable runnable)
+    public synchronized FTaskInfo getTaskInfo(Runnable runnable)
     {
         return mMapRunnable.get(runnable);
     }
@@ -124,16 +124,16 @@ public class SDTaskManager
      * @param tag
      * @return
      */
-    public synchronized List<Map.Entry<Runnable, SDTaskInfo>> getTaskInfo(String tag)
+    public synchronized List<Map.Entry<Runnable, FTaskInfo>> getTaskInfo(String tag)
     {
-        List<Map.Entry<Runnable, SDTaskInfo>> listInfo = new ArrayList<>();
+        List<Map.Entry<Runnable, FTaskInfo>> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
-            Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
+            Iterator<Map.Entry<Runnable, FTaskInfo>> it = mMapRunnable.entrySet().iterator();
             while (it.hasNext())
             {
-                Map.Entry<Runnable, SDTaskInfo> item = it.next();
-                SDTaskInfo info = item.getValue();
+                Map.Entry<Runnable, FTaskInfo> item = it.next();
+                FTaskInfo info = item.getValue();
 
                 if (tag.equals(info.getTag()))
                 {
@@ -153,7 +153,7 @@ public class SDTaskManager
      */
     public synchronized boolean cancel(Runnable runnable, boolean mayInterruptIfRunning)
     {
-        SDTaskInfo info = getTaskInfo(runnable);
+        FTaskInfo info = getTaskInfo(runnable);
         if (info == null)
         {
             return false;
@@ -174,11 +174,11 @@ public class SDTaskManager
         int count = 0;
         if (tag != null && !mMapRunnable.isEmpty())
         {
-            Iterator<Map.Entry<Runnable, SDTaskInfo>> it = mMapRunnable.entrySet().iterator();
+            Iterator<Map.Entry<Runnable, FTaskInfo>> it = mMapRunnable.entrySet().iterator();
             while (it.hasNext())
             {
-                Map.Entry<Runnable, SDTaskInfo> item = it.next();
-                SDTaskInfo info = item.getValue();
+                Map.Entry<Runnable, FTaskInfo> item = it.next();
+                FTaskInfo info = item.getValue();
 
                 if (info.isDone())
                 {
