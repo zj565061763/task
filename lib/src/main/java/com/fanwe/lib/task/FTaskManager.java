@@ -98,7 +98,7 @@ public class FTaskManager
     {
         Future<?> future = executorService.submit(runnable);
 
-        FTaskInfo info = new FTaskInfo(future, tag);
+        FTaskInfo info = new FTaskInfo(future, tag, runnable);
         mMapRunnable.put(runnable, info);
 
         return info;
@@ -121,9 +121,9 @@ public class FTaskManager
      * @param tag
      * @return
      */
-    public synchronized List<Map.Entry<Runnable, FTaskInfo>> getTaskInfo(String tag)
+    public synchronized List<FTaskInfo> getTaskInfo(String tag)
     {
-        List<Map.Entry<Runnable, FTaskInfo>> listInfo = new ArrayList<>();
+        List<FTaskInfo> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
             Iterator<Map.Entry<Runnable, FTaskInfo>> it = mMapRunnable.entrySet().iterator();
@@ -134,7 +134,7 @@ public class FTaskManager
 
                 if (tag.equals(info.getTag()))
                 {
-                    listInfo.add(item);
+                    listInfo.add(info);
                 }
             }
         }
@@ -177,15 +177,9 @@ public class FTaskManager
                 Map.Entry<Runnable, FTaskInfo> item = it.next();
                 FTaskInfo info = item.getValue();
 
-                if (info.isDone())
+                if (tag.equals(info.getTag()) && info.cancel(mayInterruptIfRunning))
                 {
-                    continue;
-                } else
-                {
-                    if (tag.equals(info.getTag()) && info.cancel(mayInterruptIfRunning))
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
         }

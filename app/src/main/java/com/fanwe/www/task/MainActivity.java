@@ -21,32 +21,25 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickAddTask(View view)
     {
-        new FTask()
+        new FTask(TAG)
         {
-            @Override
-            protected void onSubmit()
-            {
-                super.onSubmit();
-                //任务被提交到线程池
-                Log.i(TAG, "onSubmit count---------->" + FTask.getTask(TAG).size());
-            }
-
             @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "onRun:" + Thread.currentThread().getName());
+                Log.i(TAG, "----------onRun:" + Thread.currentThread().getName() + " count:" + FTask.getTask(TAG).size());
                 long i = 0;
                 while (i < 5)
                 {
-                    boolean isCancelled = isCancelled();
                     i++;
-                    Log.i(TAG, "looper:" + i + " " + isCancelled);
+                    Log.i(TAG, "looper:" + i);
 
-                    if (isCancelled)
+                    if (isCancelled())
                     {
                         break;
+                    } else
+                    {
+                        Thread.sleep(1000);
                     }
-                    Thread.sleep(1000);
                 }
             }
 
@@ -69,7 +62,7 @@ public class MainActivity extends AppCompatActivity
                 super.onFinally();
                 Log.i(TAG, "onFinally");
             }
-        }.setTag(TAG).submit();
+        }.submit();
     }
 
     public void onClickCancelTask(View view)
