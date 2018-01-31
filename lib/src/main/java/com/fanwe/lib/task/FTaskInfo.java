@@ -5,11 +5,16 @@ import java.util.concurrent.Future;
 /**
  * Created by zhengjun on 2017/10/13.
  */
-
 public class FTaskInfo
 {
     private Future future;
     private String tag;
+
+    FTaskInfo(Future future, String tag)
+    {
+        this.future = future;
+        this.tag = tag;
+    }
 
     /**
      * 取消任务
@@ -50,15 +55,5 @@ public class FTaskInfo
     public String getTag()
     {
         return tag;
-    }
-
-    void setFuture(Future future)
-    {
-        this.future = future;
-    }
-
-    void setTag(String tag)
-    {
-        this.tag = tag;
     }
 }

@@ -98,10 +98,7 @@ public class FTaskManager
     {
         Future<?> future = executorService.submit(runnable);
 
-        FTaskInfo info = new FTaskInfo();
-        info.setFuture(future);
-        info.setTag(tag);
-
+        FTaskInfo info = new FTaskInfo(future, tag);
         mMapRunnable.put(runnable, info);
 
         return info;
