@@ -6,15 +6,8 @@
 
 ## 使用方法
 ```java
-FTask task = new FTask()
+FTask task = new FTask(TAG)
 {
-    @Override
-    protected void onSubmit()
-    {
-        super.onSubmit();
-        //任务被提交到线程池
-    }
-
     @Override
     protected void onRun() throws Exception
     {
@@ -40,7 +33,6 @@ FTask task = new FTask()
     }
 };
 
-task.setTag(TAG); //给任务设置tag，可用于取消任务
 task.submit(); //把任务提交到线程池
 task.submitSequence(); //把任务提交到线程池，按顺序一个个执行
 task.cancel(true); //取消任务，true-如果线程已经执行有可能被打断收到异常，如果不希望线程被打断，取消的时候传false，然后自己在onRun中判断isCancelled()来主动停止线程
