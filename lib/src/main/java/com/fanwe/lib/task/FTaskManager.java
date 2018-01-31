@@ -16,10 +16,10 @@ public class FTaskManager
 {
     private static FTaskManager sInstance;
 
-    private static final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
-    private static final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
+    private final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
+    private final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private Map<Runnable, FTaskInfo> mMapRunnable = new WeakHashMap<>();
+    private final Map<Runnable, FTaskInfo> mMapRunnable = new WeakHashMap<>();
 
     private FTaskManager()
     {
