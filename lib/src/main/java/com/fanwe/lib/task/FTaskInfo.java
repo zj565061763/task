@@ -8,15 +8,15 @@ import java.util.concurrent.Future;
  */
 public class FTaskInfo
 {
-    private Future future;
-    private String tag;
-    private WeakReference<Runnable> runnable;
+    private Future mFuture;
+    private String mTag;
+    private WeakReference<Runnable> mRunnable;
 
     FTaskInfo(Future future, String tag, Runnable runnable)
     {
-        this.future = future;
-        this.tag = tag;
-        this.runnable = new WeakReference<>(runnable);
+        mFuture = future;
+        mTag = tag;
+        mRunnable = new WeakReference<>(runnable);
     }
 
     /**
@@ -27,7 +27,7 @@ public class FTaskInfo
      */
     public boolean cancel(boolean mayInterruptIfRunning)
     {
-        return future.cancel(mayInterruptIfRunning);
+        return mFuture.cancel(mayInterruptIfRunning);
     }
 
     /**
@@ -37,7 +37,7 @@ public class FTaskInfo
      */
     public boolean isCancelled()
     {
-        return future.isCancelled();
+        return mFuture.isCancelled();
     }
 
     /**
@@ -47,7 +47,7 @@ public class FTaskInfo
      */
     public boolean isDone()
     {
-        return future.isDone();
+        return mFuture.isDone();
     }
 
     /**
@@ -57,7 +57,7 @@ public class FTaskInfo
      */
     public String getTag()
     {
-        return tag;
+        return mTag;
     }
 
     /**
@@ -67,6 +67,6 @@ public class FTaskInfo
      */
     public Runnable getRunnable()
     {
-        return runnable == null ? null : runnable.get();
+        return mRunnable == null ? null : mRunnable.get();
     }
 }

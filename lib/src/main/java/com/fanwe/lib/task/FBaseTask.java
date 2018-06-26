@@ -103,18 +103,6 @@ public abstract class FBaseTask implements Runnable
     }
 
     /**
-     * 根据tag取消Runnable
-     *
-     * @param tag
-     * @param mayInterruptIfRunning true-如果线程已经执行有可能被打断
-     * @return 取消成功的数量
-     */
-    public static final int cancelTag(String tag, boolean mayInterruptIfRunning)
-    {
-        return FTaskManager.getInstance().cancelTag(tag, mayInterruptIfRunning);
-    }
-
-    /**
      * 查找tag对应的任务
      *
      * @param tag
@@ -124,17 +112,12 @@ public abstract class FBaseTask implements Runnable
     {
         List<FTask> listTask = new ArrayList<>();
 
-        List<FTaskInfo> listInfo = FTaskManager.getInstance().getTaskInfo(tag);
-        if (!listInfo.isEmpty())
+        final List<FTaskInfo> listInfo = FTaskManager.getInstance().getTaskInfo(tag);
+        for (FTaskInfo item : listInfo)
         {
-            for (FTaskInfo item : listInfo)
-            {
-                Runnable runnable = item.getRunnable();
-                if (runnable instanceof FTask)
-                {
-                    listTask.add((FTask) runnable);
-                }
-            }
+            final Runnable runnable = item.getRunnable();
+            if (runnable instanceof FTask)
+                listTask.add((FTask) runnable);
         }
         return listTask;
     }
