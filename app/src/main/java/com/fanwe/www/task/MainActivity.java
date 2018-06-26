@@ -6,10 +6,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.fanwe.lib.task.FTask;
+import com.fanwe.lib.task.FTaskManager;
 
 public class MainActivity extends AppCompatActivity
 {
-    public static final String TAG = "MainActivity";
+    public static final String TAG = MainActivity.class.getSimpleName();
 
 
     @Override
@@ -67,7 +68,6 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickCancelTask(View view)
     {
-        FTask.cancelTag(TAG, true);
+        FTaskManager.getInstance().cancelTag(TAG, true);
     }
-
 }
