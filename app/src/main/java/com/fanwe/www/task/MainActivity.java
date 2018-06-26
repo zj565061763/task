@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "----------onRun:" + Thread.currentThread().getName() + " count:" + FTask.getTask(TAG).size());
+                final int size = FTaskManager.getInstance().getTaskInfo(TAG).size();
+                Log.i(TAG, "----------onRun:" + Thread.currentThread().getName() + " count:" + size);
                 long i = 0;
                 while (i < 5)
                 {

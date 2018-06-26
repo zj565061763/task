@@ -117,8 +117,23 @@ public class FTaskManager
      * @param tag
      * @return
      */
-    public synchronized List<FTaskInfo> getTaskInfo(String tag)
+    public List<FTaskInfo> getTaskInfo(String tag)
     {
+        return getTaskInfo(tag, null);
+    }
+
+    /**
+     * 返回tag对应的任务信息列表
+     *
+     * @param tag
+     * @param clazz
+     * @return
+     */
+    public synchronized List<FTaskInfo> getTaskInfo(String tag, Class<?> clazz)
+    {
+        if (clazz == null)
+            clazz = Runnable.class;
+
         final List<FTaskInfo> listInfo = new ArrayList<>();
         if (tag != null && !mMapRunnable.isEmpty())
         {
@@ -127,8 +142,9 @@ public class FTaskManager
             {
                 final Map.Entry<Runnable, FTaskInfo> item = it.next();
                 final FTaskInfo info = item.getValue();
+                final Class<?> clazzRunnable = info.getRunnable().getClass();
 
-                if (tag.equals(info.getTag()))
+                if (tag.equals(info.getTag()) && clazz.isAssignableFrom(clazzRunnable))
                     listInfo.add(info);
             }
         }

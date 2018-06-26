@@ -3,8 +3,6 @@ package com.fanwe.lib.task;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -100,26 +98,6 @@ public abstract class FBaseTask implements Runnable
     public final boolean isDone()
     {
         return getTaskInfo() == null ? false : getTaskInfo().isDone();
-    }
-
-    /**
-     * 查找tag对应的任务
-     *
-     * @param tag
-     * @return
-     */
-    public static final List<FTask> getTask(String tag)
-    {
-        List<FTask> listTask = new ArrayList<>();
-
-        final List<FTaskInfo> listInfo = FTaskManager.getInstance().getTaskInfo(tag);
-        for (FTaskInfo item : listInfo)
-        {
-            final Runnable runnable = item.getRunnable();
-            if (runnable instanceof FTask)
-                listTask.add((FTask) runnable);
-        }
-        return listTask;
     }
 
     /**
