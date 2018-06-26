@@ -126,7 +126,7 @@ public class FTaskManager
      * 返回tag对应的任务信息列表
      *
      * @param tag
-     * @param clazz
+     * @param clazz class指定过滤某种类型的任务
      * @return
      */
     public synchronized List<FTaskInfo> getTaskInfo(String tag, Class<?> clazz)
