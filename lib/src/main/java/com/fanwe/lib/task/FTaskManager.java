@@ -95,7 +95,7 @@ public class FTaskManager
     public synchronized FTaskInfo submitTo(Runnable runnable, ExecutorService executorService, String tag)
     {
         final Future<?> future = executorService.submit(runnable);
-        final FTaskInfo info = new FTaskInfo(future, tag, runnable);
+        final FTaskInfo info = new FTaskInfo(tag, future);
         mMapRunnable.put(runnable, info);
         return info;
     }
@@ -142,7 +142,7 @@ public class FTaskManager
             {
                 final Map.Entry<Runnable, FTaskInfo> item = it.next();
                 final FTaskInfo info = item.getValue();
-                final Class<?> clazzRunnable = info.getRunnable().getClass();
+                final Class<?> clazzRunnable = item.getKey().getClass();
 
                 if (tag.equals(info.getTag()) && clazz.isAssignableFrom(clazzRunnable))
                     listInfo.add(info);

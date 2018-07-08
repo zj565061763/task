@@ -1,6 +1,5 @@
 package com.fanwe.lib.task;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Future;
 
 /**
@@ -8,15 +7,23 @@ import java.util.concurrent.Future;
  */
 public class FTaskInfo
 {
-    private Future mFuture;
-    private String mTag;
-    private WeakReference<Runnable> mRunnable;
+    private final String mTag;
+    private final Future mFuture;
 
-    FTaskInfo(Future future, String tag, Runnable runnable)
+    FTaskInfo(String tag, Future future)
     {
-        mFuture = future;
         mTag = tag;
-        mRunnable = new WeakReference<>(runnable);
+        mFuture = future;
+    }
+
+    /**
+     * 任务对应的tag
+     *
+     * @return
+     */
+    public String getTag()
+    {
+        return mTag;
     }
 
     /**
@@ -48,25 +55,5 @@ public class FTaskInfo
     public boolean isDone()
     {
         return mFuture.isDone();
-    }
-
-    /**
-     * 任务对应的tag
-     *
-     * @return
-     */
-    public String getTag()
-    {
-        return mTag;
-    }
-
-    /**
-     * 任务对应的Runnable对象
-     *
-     * @return
-     */
-    public Runnable getRunnable()
-    {
-        return mRunnable == null ? null : mRunnable.get();
     }
 }

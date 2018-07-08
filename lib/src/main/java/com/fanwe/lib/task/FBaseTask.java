@@ -33,11 +33,6 @@ public abstract class FBaseTask implements Runnable
         return mTag;
     }
 
-    private FTaskInfo getTaskInfo()
-    {
-        return FTaskManager.getInstance().getTaskInfo(this);
-    }
-
     /**
      * 提交任务
      *
@@ -87,7 +82,8 @@ public abstract class FBaseTask implements Runnable
      */
     public final boolean isCancelled()
     {
-        return getTaskInfo() == null ? false : getTaskInfo().isCancelled();
+        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(this);
+        return taskInfo == null ? false : taskInfo.isCancelled();
     }
 
     /**
@@ -97,7 +93,8 @@ public abstract class FBaseTask implements Runnable
      */
     public final boolean isDone()
     {
-        return getTaskInfo() == null ? false : getTaskInfo().isDone();
+        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(this);
+        return taskInfo == null ? false : taskInfo.isDone();
     }
 
     /**
