@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onRun() throws Exception
             {
-                final int size = FTaskManager.getInstance().getTaskInfo(TAG).size();
-                Log.i(TAG, "----------onRun:" + Thread.currentThread().getName() + " count:" + size);
                 long i = 0;
                 while (i < 5)
                 {
