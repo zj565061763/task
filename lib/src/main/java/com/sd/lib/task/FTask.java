@@ -1,13 +1,10 @@
-package com.fanwe.lib.task;
+package com.sd.lib.task;
 
 import android.os.Handler;
 import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
 
-/**
- * Created by zhengjun on 2017/9/12.
- */
 public abstract class FTask implements Runnable
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());

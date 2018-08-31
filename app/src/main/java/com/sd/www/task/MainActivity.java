@@ -1,12 +1,12 @@
-package com.fanwe.www.task;
+package com.sd.www.task;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.lib.task.FTask;
-import com.fanwe.lib.task.FTaskManager;
+import com.sd.lib.task.FTask;
+import com.sd.lib.task.FTaskManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
