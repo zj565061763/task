@@ -38,34 +38,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new FTask(TAG)
         {
             @Override
-            protected void onRun() throws Exception
+            protected void onRun()
             {
                 long i = 0;
                 while (i < 5)
                 {
                     i++;
-                    Log.i(TAG, "looper:" + i);
+                    Log.i(TAG, "looper:" + i + " " + this);
 
                     if (isCancelled())
                     {
                         break;
                     } else
                     {
-                        Thread.sleep(1000);
+                        try
+                        {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            }
-
-            @Override
-            protected void onError(Exception e)
-            {
-                super.onError(e);
-                //任务异常回调
-                Log.e(TAG, "onError:" + e);
-                if (isCancelled())
-                {
-                    //任务被取消
-                    Log.e(TAG, "task cancelled");
                 }
             }
 
@@ -73,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             protected void onFinally()
             {
                 super.onFinally();
-                Log.i(TAG, "onFinally");
+                Log.e(TAG, "onFinally " + this);
             }
         }.submit();
     }
