@@ -5,9 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class FTaskManager
 {
@@ -187,5 +191,68 @@ public class FTaskManager
             }
         }
         return count;
+    }
+
+    private final class RunnableWrapper extends FutureTask<String>
+    {
+        private final Runnable mRunnable;
+
+        public RunnableWrapper(Runnable runnable)
+        {
+            super(new CallableRunnable(runnable));
+            mRunnable = runnable;
+        }
+
+        @Override
+        protected void done()
+        {
+            super.done();
+            try
+            {
+                get();
+            } catch (InterruptedException e)
+            {
+                onError(e);
+            } catch (CancellationException e)
+            {
+                onCancel();
+            } catch (ExecutionException e)
+            {
+                onError(e.getCause());
+            }
+
+            onFinish();
+        }
+
+        protected void onError(Throwable throwable)
+        {
+        }
+
+        protected void onCancel()
+        {
+        }
+
+        protected void onFinish()
+        {
+        }
+    }
+
+    private static final class CallableRunnable implements Callable<String>
+    {
+        private final Runnable mRunnable;
+
+        public CallableRunnable(Runnable runnable)
+        {
+            if (runnable == null)
+                throw new IllegalArgumentException("runnable is null");
+            mRunnable = runnable;
+        }
+
+        @Override
+        public String call() throws Exception
+        {
+            mRunnable.run();
+            return null;
+        }
     }
 }
