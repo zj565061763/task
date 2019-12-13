@@ -9,17 +9,17 @@
 final FTask task = new FTask(TAG)
 {
     @Override
+    protected void onRun() throws Exception
+    {
+        Log.i(TAG, "onRun" + " " + this);
+        new TestRunnable().run();
+    }
+
+    @Override
     protected void onSubmit()
     {
         super.onSubmit();
         Log.i(TAG, "onSubmit" + " " + this);
-    }
-
-    @Override
-    protected void onRun()
-    {
-        Log.i(TAG, "onRun" + " " + this);
-        new TestRunnable().run();
     }
 
     @Override
