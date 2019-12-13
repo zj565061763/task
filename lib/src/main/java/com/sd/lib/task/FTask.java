@@ -99,7 +99,7 @@ public abstract class FTask implements Runnable
         @Override
         public void onSubmit()
         {
-            setState(State.Running);
+            setState(State.Submit);
             FTask.this.onSubmit();
         }
 
@@ -130,6 +130,7 @@ public abstract class FTask implements Runnable
     @Override
     public final void run()
     {
+        setState(State.Running);
         onRun();
     }
 
@@ -186,6 +187,7 @@ public abstract class FTask implements Runnable
     public enum State
     {
         None,
+        Submit,
         Running,
         DoneCancel,
         DoneError,
