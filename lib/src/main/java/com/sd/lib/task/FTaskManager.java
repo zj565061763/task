@@ -103,18 +103,18 @@ public class FTaskManager
         final FTaskInfo info = new FTaskInfo(tag, wrapper);
         mMapTaskInfo.put(runnable, info);
 
-        Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
-        if (mapTagTask == null)
+        Map<FTaskInfo, String> mapTagInfo = mMapTaskTag.get(tag);
+        if (mapTagInfo == null)
         {
-            mapTagTask = new ConcurrentHashMap<>();
-            mMapTaskTag.put(tag, mapTagTask);
+            mapTagInfo = new ConcurrentHashMap<>();
+            mMapTaskTag.put(tag, mapTagInfo);
         }
-        mapTagTask.put(info, "");
+        mapTagInfo.put(info, "");
 
         if (isDebug())
         {
             Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + " tag:" + tag + " callback:" + callback + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagInfo.size());
         }
 
         executorService.submit(wrapper);
@@ -218,18 +218,18 @@ public class FTaskManager
         if (info != null)
         {
             final String tag = info.getTag();
-            final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
+            final Map<FTaskInfo, String> mapTagInfo = mMapTaskTag.get(tag);
 
-            if (mapTagTask != null)
+            if (mapTagInfo != null)
             {
-                final boolean result = mapTagTask.remove(info) != null;
-                if (mapTagTask.isEmpty())
+                final boolean result = mapTagInfo.remove(info) != null;
+                if (mapTagInfo.isEmpty())
                     mMapTaskTag.remove(tag);
 
                 if (isDebug())
                 {
                     Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
-                            "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
+                            "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagInfo.size());
                 }
 
                 return result;
