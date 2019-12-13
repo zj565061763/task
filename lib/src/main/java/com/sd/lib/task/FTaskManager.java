@@ -211,10 +211,13 @@ public class FTaskManager
         final FTaskInfo info = mMapTaskInfo.remove(runnable);
         if (info != null)
         {
-            final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(info.getTag());
+            final String tag = info.getTag();
+            final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
             if (mapTagTask != null)
             {
                 final boolean result = mapTagTask.remove(info) != null;
+                if (mapTagTask.isEmpty())
+                    mMapTaskTag.remove(tag);
 
                 if (isDebug())
                 {
