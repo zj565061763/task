@@ -7,8 +7,10 @@ import java.util.concurrent.ExecutorService;
 
 public abstract class FTask implements Runnable
 {
-    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private final String mTag;
+    private State mState = State.None;
+
+    private OnStateChangeCallback mOnStateChangeCallback;
 
     public FTask()
     {
@@ -28,6 +30,26 @@ public abstract class FTask implements Runnable
     public final String getTag()
     {
         return mTag;
+    }
+
+    /**
+     * 返回当前状态
+     *
+     * @return
+     */
+    public final State getState()
+    {
+        return mState;
+    }
+
+    /**
+     * 设置状态变化回调
+     *
+     * @param callback
+     */
+    public void setOnStateChangeCallback(OnStateChangeCallback callback)
+    {
+        mOnStateChangeCallback = callback;
     }
 
     /**
@@ -72,40 +94,35 @@ public abstract class FTask implements Runnable
         return FTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
     }
 
-    /**
-     * 任务是否还在进行中
-     *
-     * @return true-已提交未执行或者执行中
-     */
-    public final boolean isRunning()
-    {
-        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(this);
-        return taskInfo != null && !taskInfo.isDone();
-    }
-
     private final FTaskManager.TaskCallback mTaskCallback = new FTaskManager.TaskCallback()
     {
         @Override
         public void onSubmit()
         {
+            setState(State.Running);
             FTask.this.onSubmit();
         }
 
         @Override
         public void onError(Throwable e)
         {
+            setState(State.DoneError);
             FTask.this.onError(e);
         }
 
         @Override
         public void onCancel()
         {
+            setState(State.DoneCancel);
             FTask.this.onCancel();
         }
 
         @Override
         public void onFinish()
         {
+            if (getState() == State.Running)
+                setState(State.DoneSuccess);
+
             FTask.this.onFinish();
         }
     };
@@ -150,6 +167,42 @@ public abstract class FTask implements Runnable
     protected void onFinish()
     {
     }
+
+    private void setState(State state)
+    {
+        if (state == null)
+            throw new IllegalArgumentException("state is null");
+
+        final State old = mState;
+        if (old != state)
+        {
+            mState = state;
+
+            if (mOnStateChangeCallback != null)
+                mOnStateChangeCallback.onStateChanged(old, mState);
+        }
+    }
+
+    public enum State
+    {
+        None,
+        Running,
+        DoneCancel,
+        DoneError,
+        DoneSuccess;
+
+        public boolean isDone()
+        {
+            return this == DoneSuccess || this == DoneError || this == DoneCancel;
+        }
+    }
+
+    public interface OnStateChangeCallback
+    {
+        void onStateChanged(State oldState, State newState);
+    }
+
+    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     public static void runOnUiThread(Runnable runnable)
     {
