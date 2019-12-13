@@ -96,8 +96,9 @@ public class FTaskManager
         cancel(runnable, true);
 
         final RunnableWrapper wrapper = new RunnableWrapper(runnable, callback);
-        final FTaskInfo info = new FTaskInfo(tag, wrapper);
+        executorService.submit(wrapper);
 
+        final FTaskInfo info = new FTaskInfo(tag, wrapper);
         mMapTaskInfo.put(runnable, info);
 
         Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
