@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addTask()
     {
-        FTask task = new FTask(TAG)
+        final FTask task = new FTask(TAG)
         {
             @Override
             protected void onSubmit()
@@ -73,6 +73,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG, "onFinish" + " " + this);
             }
         };
+
+        // 设置状态变化回调
+        task.setOnStateChangeCallback(new FTask.OnStateChangeCallback()
+        {
+            @Override
+            public void onStateChanged(FTask.State oldState, FTask.State newState)
+            {
+                Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState + " " + task);
+            }
+        });
+
         task.submit();
     }
 
