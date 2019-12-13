@@ -96,8 +96,6 @@ public class FTaskManager
         cancel(runnable, true);
 
         final RunnableWrapper wrapper = new RunnableWrapper(runnable, callback);
-        executorService.submit(wrapper);
-
         final FTaskInfo info = new FTaskInfo(tag, wrapper);
         mMapTaskInfo.put(runnable, info);
 
@@ -114,6 +112,8 @@ public class FTaskManager
             Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + " tag:" + tag + " callback:" + callback + "\r\n" +
                     "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
         }
+
+        executorService.submit(wrapper);
 
         return info;
     }
