@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.sd.lib.task.FTask;
 import com.sd.lib.task.FTaskManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
@@ -35,39 +34,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addTask()
     {
-        new FTask(TAG)
+        final Runnable runnable = new TestRunnable();
+        FTaskManager.getInstance().submit(runnable, TAG, new FTaskManager.TaskCallback()
         {
             @Override
-            protected void onRun()
+            public void onError(Throwable e)
             {
-                long i = 0;
-                while (i < 5)
-                {
-                    i++;
-                    Log.i(TAG, "looper:" + i + " " + this);
-
-                    if (isCancelled())
-                    {
-                        break;
-                    } else
-                    {
-                        try
-                        {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                Log.i(TAG, "onError:" + e + " " + runnable);
             }
 
             @Override
-            protected void onFinally()
+            public void onCancel()
             {
-                super.onFinally();
-                Log.e(TAG, "onFinally " + this);
+                Log.i(TAG, "onCancel" + " " + runnable);
             }
-        }.submit();
+
+            @Override
+            public void onFinish()
+            {
+                Log.i(TAG, "onFinish" + " " + runnable);
+            }
+        });
+    }
+
+
+    private class TestRunnable implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            long i = 0;
+            while (i < 5)
+            {
+                i++;
+                Log.i(TAG, "looper:" + i + " " + this);
+
+                try
+                {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
     }
 }

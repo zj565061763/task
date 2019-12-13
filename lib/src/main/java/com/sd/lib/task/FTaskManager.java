@@ -1,12 +1,11 @@
 package com.sd.lib.task;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +19,8 @@ public class FTaskManager
     private final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
     private final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private final Map<Runnable, FTaskInfo> mMapRunnable = new WeakHashMap<>();
+    private final Map<Runnable, FTaskInfo> mMapTaskInfo = new ConcurrentHashMap<>();
+    private final Map<String, Map<FTaskInfo, String>> mMapTaskTag = new ConcurrentHashMap<>();
 
     private FTaskManager()
     {
@@ -39,50 +39,34 @@ public class FTaskManager
         return sInstance;
     }
 
-    /**
-     * 提交要执行的Runnable
-     *
-     * @param runnable
-     * @return
-     */
     public FTaskInfo submit(Runnable runnable)
     {
         return submit(runnable, null);
     }
 
-    /**
-     * 提交要执行的Runnable
-     *
-     * @param runnable 要执行的Runnable
-     * @param tag      对应的tag，可用于取消
-     * @return
-     */
-    public FTaskInfo submit(Runnable runnable, String tag)
+    public FTaskInfo submit(Runnable runnable, TaskCallback callback)
     {
-        return submitTo(runnable, DEFAULT_EXECUTOR, tag);
+        return submit(runnable, null, callback);
     }
 
-    /**
-     * 提交要执行的Runnable，按提交的顺序一个个执行
-     *
-     * @param runnable
-     * @return
-     */
+    public FTaskInfo submit(Runnable runnable, String tag, TaskCallback callback)
+    {
+        return submitTo(runnable, tag, DEFAULT_EXECUTOR, callback);
+    }
+
     public FTaskInfo submitSequence(Runnable runnable)
     {
         return submitSequence(runnable, null);
     }
 
-    /**
-     * 提交要执行的Runnable，按提交的顺序一个个执行
-     *
-     * @param runnable 要执行的Runnable
-     * @param tag      对应的tag，可用于取消
-     * @return
-     */
-    public FTaskInfo submitSequence(Runnable runnable, String tag)
+    public FTaskInfo submitSequence(Runnable runnable, TaskCallback callback)
     {
-        return submitTo(runnable, SINGLE_EXECUTOR, tag);
+        return submitSequence(runnable, null, callback);
+    }
+
+    public FTaskInfo submitSequence(Runnable runnable, String tag, TaskCallback callback)
+    {
+        return submitTo(runnable, tag, SINGLE_EXECUTOR, callback);
     }
 
     /**
@@ -91,13 +75,27 @@ public class FTaskManager
      * @param runnable        要执行的Runnable
      * @param executorService 要执行Runnable的线程池
      * @param tag             对应的tag，可用于取消
+     * @param callback        任务执行回调
      * @return
      */
-    public synchronized FTaskInfo submitTo(Runnable runnable, ExecutorService executorService, String tag)
+    public synchronized FTaskInfo submitTo(Runnable runnable, String tag, ExecutorService executorService, TaskCallback callback)
     {
-        final Future<?> future = executorService.submit(runnable);
+        cancel(runnable, true);
+
+        final RunnableWrapper wrapper = new RunnableWrapper(runnable, callback);
+        final Future<?> future = executorService.submit(wrapper);
         final FTaskInfo info = new FTaskInfo(tag, future);
-        mMapRunnable.put(runnable, info);
+
+        mMapTaskInfo.put(runnable, info);
+
+        Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
+        if (mapTagTask == null)
+        {
+            mapTagTask = new ConcurrentHashMap<>();
+            mMapTaskTag.put(tag, mapTagTask);
+        }
+        mapTagTask.put(info, "");
+
         return info;
     }
 
@@ -109,7 +107,7 @@ public class FTaskManager
      */
     public synchronized FTaskInfo getTaskInfo(Runnable runnable)
     {
-        return mMapRunnable.get(runnable);
+        return mMapTaskInfo.get(runnable);
     }
 
     /**
@@ -118,37 +116,19 @@ public class FTaskManager
      * @param tag
      * @return
      */
-    public List<FTaskInfo> getTaskInfo(String tag)
+    public synchronized List<FTaskInfo> getTaskInfo(String tag)
     {
-        return getTaskInfo(tag, null);
-    }
-
-    /**
-     * 返回tag对应的任务信息列表
-     *
-     * @param tag
-     * @param clazz class指定过滤某种类型的任务
-     * @return
-     */
-    public synchronized List<FTaskInfo> getTaskInfo(String tag, Class<?> clazz)
-    {
-        if (clazz == null)
-            clazz = Runnable.class;
-
         final List<FTaskInfo> listInfo = new ArrayList<>();
-        if (tag != null && !mMapRunnable.isEmpty())
-        {
-            final Iterator<Map.Entry<Runnable, FTaskInfo>> it = mMapRunnable.entrySet().iterator();
-            while (it.hasNext())
-            {
-                final Map.Entry<Runnable, FTaskInfo> item = it.next();
-                final FTaskInfo info = item.getValue();
-                final Class<?> clazzRunnable = item.getKey().getClass();
 
-                if (tag.equals(info.getTag()) && clazz.isAssignableFrom(clazzRunnable))
-                    listInfo.add(info);
+        if (tag != null && mMapTaskTag.size() > 0)
+        {
+            final Map<FTaskInfo, String> map = mMapTaskTag.get(tag);
+            if (map != null && map.size() > 0)
+            {
+                listInfo.addAll(map.keySet());
             }
         }
+
         return listInfo;
     }
 
@@ -178,29 +158,43 @@ public class FTaskManager
     public synchronized int cancelTag(String tag, boolean mayInterruptIfRunning)
     {
         int count = 0;
-        if (tag != null && !mMapRunnable.isEmpty())
-        {
-            final Iterator<Map.Entry<Runnable, FTaskInfo>> it = mMapRunnable.entrySet().iterator();
-            while (it.hasNext())
-            {
-                final Map.Entry<Runnable, FTaskInfo> item = it.next();
-                final FTaskInfo info = item.getValue();
 
-                if (tag.equals(info.getTag()) && info.cancel(mayInterruptIfRunning))
-                    count++;
-            }
+        final List<FTaskInfo> listInfo = getTaskInfo(tag);
+        for (FTaskInfo item : listInfo)
+        {
+            if (item.cancel(mayInterruptIfRunning))
+                count++;
         }
+
         return count;
+    }
+
+    private synchronized boolean removeTask(Runnable runnable)
+    {
+        if (runnable == null)
+            throw new IllegalArgumentException("runnable is null");
+
+        final FTaskInfo info = mMapTaskInfo.remove(runnable);
+        if (info != null)
+        {
+            final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(info.getTag());
+            if (mapTagTask != null)
+                return mapTagTask.remove(info) != null;
+        }
+
+        return false;
     }
 
     private final class RunnableWrapper extends FutureTask<String>
     {
         private final Runnable mRunnable;
+        private final TaskCallback mCallback;
 
-        public RunnableWrapper(Runnable runnable)
+        public RunnableWrapper(Runnable runnable, TaskCallback callback)
         {
             super(new CallableRunnable(runnable));
             mRunnable = runnable;
+            mCallback = callback;
         }
 
         @Override
@@ -221,19 +215,30 @@ public class FTaskManager
                 onError(e.getCause());
             }
 
+
+            final boolean remove = removeTask(mRunnable);
+            if (!remove)
+                throw new RuntimeException("remove task error, runnable was not found:" + mRunnable);
+
             onFinish();
         }
 
         protected void onError(Throwable throwable)
         {
+            if (mCallback != null)
+                mCallback.onError(throwable);
         }
 
         protected void onCancel()
         {
+            if (mCallback != null)
+                mCallback.onCancel();
         }
 
         protected void onFinish()
         {
+            if (mCallback != null)
+                mCallback.onFinish();
         }
     }
 
@@ -254,5 +259,14 @@ public class FTaskManager
             mRunnable.run();
             return null;
         }
+    }
+
+    public interface TaskCallback
+    {
+        void onError(Throwable e);
+
+        void onCancel();
+
+        void onFinish();
     }
 }

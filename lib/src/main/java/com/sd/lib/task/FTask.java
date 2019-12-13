@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
 
-public abstract class FTask implements Runnable
+public abstract class FTask implements Runnable, FTaskManager.TaskCallback
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private final String mTag;
@@ -37,7 +37,7 @@ public abstract class FTask implements Runnable
      */
     public final FTaskInfo submit()
     {
-        return FTaskManager.getInstance().submit(this, getTag());
+        return FTaskManager.getInstance().submit(this, getTag(), this);
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class FTask implements Runnable
      */
     public final FTaskInfo submitSequence()
     {
-        return FTaskManager.getInstance().submitSequence(this, getTag());
+        return FTaskManager.getInstance().submitSequence(this, getTag(), this);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class FTask implements Runnable
      */
     public final FTaskInfo submitTo(ExecutorService executorService)
     {
-        return FTaskManager.getInstance().submitTo(this, executorService, getTag());
+        return FTaskManager.getInstance().submitTo(this, getTag(), executorService, this);
     }
 
     /**
@@ -70,28 +70,6 @@ public abstract class FTask implements Runnable
     public final boolean cancel(boolean mayInterruptIfRunning)
     {
         return FTaskManager.getInstance().cancel(this, mayInterruptIfRunning);
-    }
-
-    /**
-     * 是否被取消
-     *
-     * @return
-     */
-    public final boolean isCancelled()
-    {
-        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(this);
-        return taskInfo == null ? false : taskInfo.isCancelled();
-    }
-
-    /**
-     * 任务是否完成
-     *
-     * @return
-     */
-    public final boolean isDone()
-    {
-        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(this);
-        return taskInfo != null && taskInfo.isDone();
     }
 
     /**
@@ -108,25 +86,41 @@ public abstract class FTask implements Runnable
     @Override
     public final void run()
     {
-        try
-        {
-            onRun();
-        } finally
-        {
-            onFinally();
-        }
+        onRun();
     }
 
     /**
-     * 任务执行回调（任务执行线程）
+     * 执行回调（执行线程）
      */
     protected abstract void onRun();
 
     /**
-     * 任务执行完成回调（任务执行线程）
+     * 错误回调（执行线程）
+     *
+     * @param e
      */
-    protected void onFinally()
+    @Override
+    public void onError(Throwable e)
     {
+
+    }
+
+    /**
+     * 取消回调（执行线程）
+     */
+    @Override
+    public void onCancel()
+    {
+
+    }
+
+    /**
+     * 结束回调（执行线程）
+     */
+    @Override
+    public void onFinish()
+    {
+
     }
 
     public static void runOnUiThread(Runnable runnable)
