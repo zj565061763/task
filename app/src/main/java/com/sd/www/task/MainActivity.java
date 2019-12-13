@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addTask()
     {
-        new FTask(TAG)
+        FTask task = new FTask(TAG)
         {
             @Override
             protected void onRun()
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 super.onFinish();
                 Log.i(TAG, "onFinish" + " " + this);
             }
-        }.submit();
+        };
+        task.submit();
     }
 
     private class TestRunnable implements Runnable
