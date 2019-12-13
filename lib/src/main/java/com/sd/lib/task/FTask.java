@@ -59,7 +59,7 @@ public abstract class FTask
      */
     public final FTaskInfo submit()
     {
-        return FTaskManager.getInstance().submit(mRunnable, getTag(), mTaskCallback);
+        return FTaskManager.getInstance().submit(mTaskRunnable, getTag());
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class FTask
      */
     public final FTaskInfo submitSequence()
     {
-        return FTaskManager.getInstance().submitSequence(mRunnable, getTag(), mTaskCallback);
+        return FTaskManager.getInstance().submitSequence(mTaskRunnable, getTag());
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class FTask
      */
     public final FTaskInfo submitTo(ExecutorService executorService)
     {
-        return FTaskManager.getInstance().submitTo(mRunnable, getTag(), executorService, mTaskCallback);
+        return FTaskManager.getInstance().submitTo(mTaskRunnable, getTag(), executorService);
     }
 
     /**
@@ -91,11 +91,18 @@ public abstract class FTask
      */
     public final boolean cancel(boolean mayInterruptIfRunning)
     {
-        return FTaskManager.getInstance().cancel(mRunnable, mayInterruptIfRunning);
+        return FTaskManager.getInstance().cancel(mTaskRunnable, mayInterruptIfRunning);
     }
 
-    private final FTaskManager.TaskCallback mTaskCallback = new FTaskManager.TaskCallback()
+    private final FTaskManager.TaskRunnable mTaskRunnable = new FTaskManager.TaskRunnable()
     {
+        @Override
+        public void onRun() throws Exception
+        {
+            FTask.this.setState(State.Running);
+            FTask.this.onRun();
+        }
+
         @Override
         public void onError(Exception e)
         {
@@ -117,26 +124,6 @@ public abstract class FTask
                 FTask.this.setState(State.DoneSuccess);
 
             FTask.this.onFinish();
-        }
-    };
-
-    private final Runnable mRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            FTask.this.setState(State.Running);
-
-            try
-            {
-                FTask.this.onRun();
-            } catch (Exception e)
-            {
-                if (getState() == State.Running)
-                    mTaskCallback.onError(e);
-                else
-                    FTask.this.onError(e);
-            }
         }
     };
 
