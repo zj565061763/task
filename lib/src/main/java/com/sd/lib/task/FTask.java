@@ -135,7 +135,7 @@ public abstract class FTask implements Runnable
         try
         {
             onRun();
-        } catch (Exception e)
+        } catch (Throwable e)
         {
             mTaskCallback.onError(e);
         }
@@ -144,9 +144,9 @@ public abstract class FTask implements Runnable
     /**
      * 执行回调（执行线程）
      *
-     * @throws Exception
+     * @throws Throwable
      */
-    protected abstract void onRun() throws Exception;
+    protected abstract void onRun() throws Throwable;
 
     /**
      * 提交回调（提交线程）

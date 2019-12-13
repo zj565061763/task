@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final FTask task = new FTask(TAG)
         {
             @Override
-            protected void onRun() throws Exception
+            protected void onRun() throws Throwable
             {
                 Log.i(TAG, "onRun" + " " + this);
                 new TestRunnable().run();
