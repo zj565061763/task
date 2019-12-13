@@ -9,6 +9,9 @@ public class FTaskInfo
 
     FTaskInfo(String tag, Future future)
     {
+        if (tag == null || future == null)
+            throw new IllegalArgumentException();
+
         mTag = tag;
         mFuture = future;
     }
