@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.sd.lib.task.FTask;
 import com.sd.lib.task.FTaskManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
@@ -35,29 +36,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addTask()
     {
-        final Runnable runnable = new TestRunnable();
-        FTaskManager.getInstance().submit(runnable, TAG, new FTaskManager.TaskCallback()
+        new FTask(TAG)
         {
+            @Override
+            protected void onRun()
+            {
+                Log.i(TAG, "onRun" + " " + this);
+                new TestRunnable().run();
+            }
+
             @Override
             public void onError(Throwable e)
             {
-                Log.i(TAG, "onError:" + e + " " + runnable);
+                super.onError(e);
+                Log.i(TAG, "onError:" + e + " " + this);
             }
 
             @Override
             public void onCancel()
             {
-                Log.i(TAG, "onCancel" + " " + runnable);
+                super.onCancel();
+                Log.i(TAG, "onCancel" + " " + this);
             }
 
             @Override
             public void onFinish()
             {
-                Log.i(TAG, "onFinish" + " " + runnable);
+                super.onFinish();
+                Log.i(TAG, "onFinish" + " " + this);
             }
-        });
+        }.submit();
     }
-
 
     private class TestRunnable implements Runnable
     {
@@ -80,5 +89,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        FTaskManager.getInstance().cancelTag(TAG, true);
     }
 }
