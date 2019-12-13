@@ -199,8 +199,17 @@ public abstract class FTask implements Runnable
         }
     }
 
+    /**
+     * 状态变化回调
+     */
     public interface OnStateChangeCallback
     {
+        /**
+         * 状态变化回调，不一定在主线程回调
+         *
+         * @param oldState
+         * @param newState
+         */
         void onStateChanged(State oldState, State newState);
     }
 
