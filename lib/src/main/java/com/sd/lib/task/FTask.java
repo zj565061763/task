@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
 
-public abstract class FTask implements Runnable, FTaskManager.TaskCallback
+public abstract class FTask implements Runnable
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private final String mTag;
@@ -37,7 +37,7 @@ public abstract class FTask implements Runnable, FTaskManager.TaskCallback
      */
     public final FTaskInfo submit()
     {
-        return FTaskManager.getInstance().submit(this, getTag(), this);
+        return FTaskManager.getInstance().submit(this, getTag(), mTaskCallback);
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class FTask implements Runnable, FTaskManager.TaskCallback
      */
     public final FTaskInfo submitSequence()
     {
-        return FTaskManager.getInstance().submitSequence(this, getTag(), this);
+        return FTaskManager.getInstance().submitSequence(this, getTag(), mTaskCallback);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class FTask implements Runnable, FTaskManager.TaskCallback
      */
     public final FTaskInfo submitTo(ExecutorService executorService)
     {
-        return FTaskManager.getInstance().submitTo(this, getTag(), executorService, this);
+        return FTaskManager.getInstance().submitTo(this, getTag(), executorService, mTaskCallback);
     }
 
     /**
@@ -83,6 +83,33 @@ public abstract class FTask implements Runnable, FTaskManager.TaskCallback
         return taskInfo != null && !taskInfo.isDone();
     }
 
+    private final FTaskManager.TaskCallback mTaskCallback = new FTaskManager.TaskCallback()
+    {
+        @Override
+        public void onSubmit()
+        {
+            FTask.this.onSubmit();
+        }
+
+        @Override
+        public void onError(Throwable e)
+        {
+            FTask.this.onError(e);
+        }
+
+        @Override
+        public void onCancel()
+        {
+            FTask.this.onCancel();
+        }
+
+        @Override
+        public void onFinish()
+        {
+            FTask.this.onFinish();
+        }
+    };
+
     @Override
     public final void run()
     {
@@ -95,32 +122,33 @@ public abstract class FTask implements Runnable, FTaskManager.TaskCallback
     protected abstract void onRun();
 
     /**
+     * 提交回调（提交线程）
+     */
+    protected void onSubmit()
+    {
+    }
+
+    /**
      * 错误回调（执行线程）
      *
      * @param e
      */
-    @Override
-    public void onError(Throwable e)
+    protected void onError(Throwable e)
     {
-
     }
 
     /**
      * 取消回调（执行线程）
      */
-    @Override
-    public void onCancel()
+    protected void onCancel()
     {
-
     }
 
     /**
      * 结束回调（执行线程）
      */
-    @Override
-    public void onFinish()
+    protected void onFinish()
     {
-
     }
 
     public static void runOnUiThread(Runnable runnable)

@@ -119,6 +119,9 @@ public class FTaskManager
 
         executorService.submit(wrapper);
 
+        if (callback != null)
+            callback.onSubmit();
+
         return info;
     }
 
@@ -329,6 +332,8 @@ public class FTaskManager
 
     public interface TaskCallback
     {
+        void onSubmit();
+
         void onError(Throwable e);
 
         void onCancel();
