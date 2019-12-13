@@ -9,13 +9,13 @@
 final FTask task = new FTask(TAG)
 {
     @Override
-    protected void onRun() throws Throwable
+    protected void onRun() throws Exception
     {
         Log.i(TAG, "onRun" + " " + this);
     }
 
     @Override
-    protected void onError(Throwable e)
+    protected void onError(Exception e)
     {
         super.onError(e);
         Log.i(TAG, "onError:" + e + " " + this);
