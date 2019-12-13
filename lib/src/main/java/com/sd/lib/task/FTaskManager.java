@@ -112,7 +112,7 @@ public class FTaskManager
 
         if (isDebug())
         {
-            Log.i(FTaskManager.class.getName(), "submitTo runnable:" + runnable + " tag:" + tag + " callback:" + callback + "\r\n" +
+            Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + " tag:" + tag + " callback:" + callback + "\r\n" +
                     "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
         }
 
@@ -250,7 +250,7 @@ public class FTaskManager
             super.done();
 
             if (isDebug())
-                Log.i(FTaskManager.class.getName(), "done runnable:" + mRunnable);
+                Log.i(FTaskManager.class.getName(), "----- done runnable:" + mRunnable);
 
             try
             {
