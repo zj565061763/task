@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public class FTaskManager
@@ -97,8 +96,7 @@ public class FTaskManager
         cancel(runnable, true);
 
         final RunnableWrapper wrapper = new RunnableWrapper(runnable, callback);
-        final Future<?> future = executorService.submit(wrapper);
-        final FTaskInfo info = new FTaskInfo(tag, future);
+        final FTaskInfo info = new FTaskInfo(tag, wrapper);
 
         mMapTaskInfo.put(runnable, info);
 
