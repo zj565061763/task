@@ -93,6 +93,9 @@ public class FTaskManager
      */
     public synchronized FTaskInfo submitTo(Runnable runnable, String tag, ExecutorService executorService, TaskCallback callback)
     {
+        if (tag == null)
+            tag = "";
+
         cancel(runnable, true);
 
         final RunnableWrapper wrapper = new RunnableWrapper(runnable, callback);
