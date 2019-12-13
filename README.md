@@ -12,14 +12,6 @@ final FTask task = new FTask(TAG)
     protected void onRun() throws Throwable
     {
         Log.i(TAG, "onRun" + " " + this);
-        new TestRunnable().run();
-    }
-
-    @Override
-    protected void onSubmit()
-    {
-        super.onSubmit();
-        Log.i(TAG, "onSubmit" + " " + this);
     }
 
     @Override
