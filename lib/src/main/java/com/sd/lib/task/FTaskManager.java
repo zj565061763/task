@@ -272,19 +272,23 @@ public class FTaskManager
                 onCancel();
             } catch (ExecutionException e)
             {
-                onError(e.getCause());
+                final Throwable cause = e.getCause();
+                if (cause instanceof Exception)
+                    onError((Exception) cause);
+                else
+                    onError(e);
             }
 
             onFinish();
         }
 
-        protected void onError(Throwable throwable)
+        protected void onError(Exception e)
         {
             if (isDebug())
-                Log.i(FTaskManager.class.getName(), "done onError:" + throwable + " runnable:" + mRunnable);
+                Log.i(FTaskManager.class.getName(), "done onError:" + e + " runnable:" + mRunnable);
 
             if (mCallback != null)
-                mCallback.onError(throwable);
+                mCallback.onError(e);
         }
 
         protected void onCancel()
@@ -330,7 +334,7 @@ public class FTaskManager
 
     public interface TaskCallback
     {
-        void onError(Throwable e);
+        void onError(Exception e);
 
         void onCancel();
 

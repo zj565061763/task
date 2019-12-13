@@ -97,7 +97,7 @@ public abstract class FTask
     private final FTaskManager.TaskCallback mTaskCallback = new FTaskManager.TaskCallback()
     {
         @Override
-        public void onError(Throwable e)
+        public void onError(Exception e)
         {
             FTask.this.setState(State.DoneError);
             FTask.this.onError(e);
@@ -130,7 +130,7 @@ public abstract class FTask
             try
             {
                 FTask.this.onRun();
-            } catch (Throwable e)
+            } catch (Exception e)
             {
                 if (getState() == State.Running)
                     mTaskCallback.onError(e);
@@ -143,16 +143,16 @@ public abstract class FTask
     /**
      * 执行回调（执行线程）
      *
-     * @throws Throwable
+     * @throws Exception
      */
-    protected abstract void onRun() throws Throwable;
+    protected abstract void onRun() throws Exception;
 
     /**
      * 错误回调（执行线程）
      *
      * @param e
      */
-    protected void onError(Throwable e)
+    protected void onError(Exception e)
     {
     }
 
