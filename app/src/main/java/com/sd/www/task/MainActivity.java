@@ -46,13 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            protected void onSubmit()
-            {
-                super.onSubmit();
-                Log.i(TAG, "onSubmit" + " " + this);
-            }
-
-            @Override
             protected void onError(Throwable e)
             {
                 super.onError(e);
