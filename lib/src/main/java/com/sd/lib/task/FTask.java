@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 public abstract class FTask implements Runnable
 {
     private final String mTag;
-    private State mState = State.None;
+    private volatile State mState = State.None;
 
     private OnStateChangeCallback mOnStateChangeCallback;
 
