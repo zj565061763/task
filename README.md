@@ -9,6 +9,13 @@
 FTask task = new FTask(TAG)
 {
     @Override
+    protected void onSubmit()
+    {
+        super.onSubmit();
+        Log.i(TAG, "onSubmit" + " " + this);
+    }
+
+    @Override
     protected void onRun()
     {
         Log.i(TAG, "onRun" + " " + this);
@@ -16,21 +23,21 @@ FTask task = new FTask(TAG)
     }
 
     @Override
-    public void onError(Throwable e)
+    protected void onError(Throwable e)
     {
         super.onError(e);
         Log.i(TAG, "onError:" + e + " " + this);
     }
 
     @Override
-    public void onCancel()
+    protected void onCancel()
     {
         super.onCancel();
         Log.i(TAG, "onCancel" + " " + this);
     }
 
     @Override
-    public void onFinish()
+    protected void onFinish()
     {
         super.onFinish();
         Log.i(TAG, "onFinish" + " " + this);
