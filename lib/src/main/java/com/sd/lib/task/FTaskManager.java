@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -21,8 +22,8 @@ public class FTaskManager
     private final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool();
     private final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private final Map<Runnable, FTaskInfo> mMapTaskInfo = new ConcurrentHashMap<>();
-    private final Map<String, Map<FTaskInfo, String>> mMapTaskTag = new ConcurrentHashMap<>();
+    private final Map<Runnable, FTaskInfo> mMapTaskInfo = new HashMap<>();
+    private final Map<String, Map<FTaskInfo, String>> mMapTaskTag = new HashMap<>();
 
     private boolean mDebug;
 
