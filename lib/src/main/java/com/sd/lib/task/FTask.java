@@ -131,13 +131,22 @@ public abstract class FTask implements Runnable
     public final void run()
     {
         setState(State.Running);
-        onRun();
+
+        try
+        {
+            onRun();
+        } catch (Exception e)
+        {
+            mTaskCallback.onError(e);
+        }
     }
 
     /**
      * 执行回调（执行线程）
+     *
+     * @throws Exception
      */
-    protected abstract void onRun();
+    protected abstract void onRun() throws Exception;
 
     /**
      * 提交回调（提交线程）
