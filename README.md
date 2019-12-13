@@ -6,7 +6,7 @@
 
 ## 使用方法
 ```java
-FTask task = new FTask(TAG)
+final FTask task = new FTask(TAG)
 {
     @Override
     protected void onSubmit()
@@ -43,6 +43,16 @@ FTask task = new FTask(TAG)
         Log.i(TAG, "onFinish" + " " + this);
     }
 };
+
+// 设置状态变化回调
+task.setOnStateChangeCallback(new FTask.OnStateChangeCallback()
+{
+    @Override
+    public void onStateChanged(FTask.State oldState, FTask.State newState)
+    {
+        Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState + " " + task);
+    }
+});
 
 task.submit(); //把任务提交到线程池
 task.submitSequence(); //把任务提交到线程池，按顺序一个个执行
