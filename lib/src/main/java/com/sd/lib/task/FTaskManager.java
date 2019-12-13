@@ -1,5 +1,7 @@
 package com.sd.lib.task;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,8 @@ public class FTaskManager
     private final Map<Runnable, FTaskInfo> mMapTaskInfo = new ConcurrentHashMap<>();
     private final Map<String, Map<FTaskInfo, String>> mMapTaskTag = new ConcurrentHashMap<>();
 
+    private boolean mDebug;
+
     private FTaskManager()
     {
     }
@@ -37,6 +41,16 @@ public class FTaskManager
             }
         }
         return sInstance;
+    }
+
+    public boolean isDebug()
+    {
+        return mDebug;
+    }
+
+    public void setDebug(boolean debug)
+    {
+        mDebug = debug;
     }
 
     public FTaskInfo submit(Runnable runnable)
@@ -96,6 +110,12 @@ public class FTaskManager
         }
         mapTagTask.put(info, "");
 
+        if (isDebug())
+        {
+            Log.i(FTaskManager.class.getName(), "submitTo runnable:" + runnable + " tag:" + tag + " callback:" + callback + "\r\n" +
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
+        }
+
         return info;
     }
 
@@ -145,7 +165,15 @@ public class FTaskManager
         if (info == null)
             return false;
 
-        return info.cancel(mayInterruptIfRunning);
+        if (isDebug())
+            Log.i(FTaskManager.class.getName(), "try cancel runnable:" + runnable + " mayInterruptIfRunning:" + mayInterruptIfRunning);
+
+        final boolean result = info.cancel(mayInterruptIfRunning);
+
+        if (isDebug())
+            Log.i(FTaskManager.class.getName(), "try cancel runnable:" + runnable + " result:" + result);
+
+        return result;
     }
 
     /**
@@ -159,12 +187,18 @@ public class FTaskManager
     {
         int count = 0;
 
+        if (isDebug())
+            Log.i(FTaskManager.class.getName(), "try cancelTag tag:" + tag + " mayInterruptIfRunning:" + mayInterruptIfRunning);
+
         final List<FTaskInfo> listInfo = getTaskInfo(tag);
         for (FTaskInfo item : listInfo)
         {
             if (item.cancel(mayInterruptIfRunning))
                 count++;
         }
+
+        if (isDebug())
+            Log.i(FTaskManager.class.getName(), "try cancelTag tag:" + tag + " count:" + count);
 
         return count;
     }
@@ -179,7 +213,17 @@ public class FTaskManager
         {
             final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(info.getTag());
             if (mapTagTask != null)
-                return mapTagTask.remove(info) != null;
+            {
+                final boolean result = mapTagTask.remove(info) != null;
+
+                if (isDebug())
+                {
+                    Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
+                            "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagTask.size());
+                }
+
+                return result;
+            }
         }
 
         return false;
@@ -201,6 +245,10 @@ public class FTaskManager
         protected void done()
         {
             super.done();
+
+            if (isDebug())
+                Log.i(FTaskManager.class.getName(), "done runnable:" + mRunnable);
+
             try
             {
                 get();
@@ -215,7 +263,6 @@ public class FTaskManager
                 onError(e.getCause());
             }
 
-
             final boolean remove = removeTask(mRunnable);
             if (!remove)
                 throw new RuntimeException("remove task error, runnable was not found:" + mRunnable);
@@ -225,24 +272,33 @@ public class FTaskManager
 
         protected void onError(Throwable throwable)
         {
+            if (isDebug())
+                Log.i(FTaskManager.class.getName(), "done onError:" + throwable + " runnable:" + mRunnable);
+
             if (mCallback != null)
                 mCallback.onError(throwable);
         }
 
         protected void onCancel()
         {
+            if (isDebug())
+                Log.i(FTaskManager.class.getName(), "done onCancel:" + mRunnable);
+
             if (mCallback != null)
                 mCallback.onCancel();
         }
 
         protected void onFinish()
         {
+            if (isDebug())
+                Log.i(FTaskManager.class.getName(), "done onFinish:" + mRunnable);
+
             if (mCallback != null)
                 mCallback.onFinish();
         }
     }
 
-    private static final class CallableRunnable implements Callable<String>
+    private final class CallableRunnable implements Callable<String>
     {
         private final Runnable mRunnable;
 
@@ -256,6 +312,9 @@ public class FTaskManager
         @Override
         public String call() throws Exception
         {
+            if (isDebug())
+                Log.i(FTaskManager.class.getName(), "call runnable:" + mRunnable);
+
             mRunnable.run();
             return null;
         }
