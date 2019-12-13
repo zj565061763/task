@@ -1,5 +1,6 @@
 package com.sd.lib.task;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -142,7 +143,7 @@ public class FTaskManager
     {
         final List<FTaskInfo> listInfo = new ArrayList<>();
 
-        if (tag != null && mMapTaskTag.size() > 0)
+        if (!TextUtils.isEmpty(tag) && mMapTaskTag.size() > 0)
         {
             final Map<FTaskInfo, String> map = mMapTaskTag.get(tag);
             if (map != null && map.size() > 0)
@@ -215,6 +216,7 @@ public class FTaskManager
         {
             final String tag = info.getTag();
             final Map<FTaskInfo, String> mapTagTask = mMapTaskTag.get(tag);
+
             if (mapTagTask != null)
             {
                 final boolean result = mapTagTask.remove(info) != null;
