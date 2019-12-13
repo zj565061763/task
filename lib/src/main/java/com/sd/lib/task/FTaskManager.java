@@ -250,6 +250,10 @@ public class FTaskManager
             if (isDebug())
                 Log.i(FTaskManager.class.getName(), "----- done runnable:" + mRunnable);
 
+            final boolean remove = removeTask(mRunnable);
+            if (!remove)
+                throw new RuntimeException("remove task error, runnable was not found:" + mRunnable);
+
             try
             {
                 get();
@@ -263,10 +267,6 @@ public class FTaskManager
             {
                 onError(e.getCause());
             }
-
-            final boolean remove = removeTask(mRunnable);
-            if (!remove)
-                throw new RuntimeException("remove task error, runnable was not found:" + mRunnable);
 
             onFinish();
         }
