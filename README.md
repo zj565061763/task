@@ -9,27 +9,31 @@
 FTask task = new FTask(TAG)
 {
     @Override
-    protected void onRun() throws Exception
+    protected void onRun()
     {
-        //任务执行
+        Log.i(TAG, "onRun" + " " + this);
+        new TestRunnable().run();
     }
 
     @Override
-    protected void onError(Exception e)
+    public void onError(Throwable e)
     {
         super.onError(e);
-        //任务异常回调
-        if (isCancelled())
-        {
-            //任务被取消
-        }
+        Log.i(TAG, "onError:" + e + " " + this);
     }
 
     @Override
-    protected void onFinally()
+    public void onCancel()
     {
-        super.onFinally();
-        //最终执行的回调方法
+        super.onCancel();
+        Log.i(TAG, "onCancel" + " " + this);
+    }
+
+    @Override
+    public void onFinish()
+    {
+        super.onFinish();
+        Log.i(TAG, "onFinish" + " " + this);
     }
 };
 
