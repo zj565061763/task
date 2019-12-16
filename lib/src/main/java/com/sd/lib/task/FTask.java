@@ -59,7 +59,7 @@ public abstract class FTask
      */
     public final FTaskInfo submit()
     {
-        return FTaskManager.getInstance().submit(mRunnable, getTag(), mTaskCallback);
+        return FTaskManager.getInstance().submit(mTaskRunnable, getTag());
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class FTask
      */
     public final FTaskInfo submitSequence()
     {
-        return FTaskManager.getInstance().submitSequence(mRunnable, getTag(), mTaskCallback);
+        return FTaskManager.getInstance().submitSequence(mTaskRunnable, getTag());
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class FTask
      */
     public final FTaskInfo submitTo(ExecutorService executorService)
     {
-        return FTaskManager.getInstance().submitTo(mRunnable, getTag(), executorService, mTaskCallback);
+        return FTaskManager.getInstance().submitTo(mTaskRunnable, getTag(), executorService);
     }
 
     /**
@@ -91,31 +91,20 @@ public abstract class FTask
      */
     public final boolean cancel(boolean mayInterruptIfRunning)
     {
-        return FTaskManager.getInstance().cancel(mRunnable, mayInterruptIfRunning);
+        return FTaskManager.getInstance().cancel(mTaskRunnable, mayInterruptIfRunning);
     }
 
-    /**
-     * 任务是否已提交（提交未执行或者执行中）
-     *
-     * @return
-     */
-    public final boolean isSubmitted()
-    {
-        final FTaskInfo taskInfo = FTaskManager.getInstance().getTaskInfo(mRunnable);
-        return taskInfo != null && !taskInfo.isDone();
-    }
-
-    private final FTaskManager.TaskCallback mTaskCallback = new FTaskManager.TaskCallback()
+    private final FTaskManager.TaskRunnable mTaskRunnable = new FTaskManager.TaskRunnable()
     {
         @Override
-        public void onSubmit()
+        public void onRun() throws Exception
         {
-            FTask.this.setState(State.Submit);
-            FTask.this.onSubmit();
+            FTask.this.setState(State.Running);
+            FTask.this.onRun();
         }
 
         @Override
-        public void onError(Throwable e)
+        public void onError(Exception e)
         {
             FTask.this.setState(State.DoneError);
             FTask.this.onError(e);
@@ -138,46 +127,19 @@ public abstract class FTask
         }
     };
 
-    private final Runnable mRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            FTask.this.setState(State.Running);
-
-            try
-            {
-                FTask.this.onRun();
-            } catch (Throwable e)
-            {
-                if (getState() == State.Running)
-                    mTaskCallback.onError(e);
-                else
-                    FTask.this.onError(e);
-            }
-        }
-    };
-
     /**
      * 执行回调（执行线程）
      *
-     * @throws Throwable
+     * @throws Exception
      */
-    protected abstract void onRun() throws Throwable;
-
-    /**
-     * 提交回调（提交线程）
-     */
-    protected void onSubmit()
-    {
-    }
+    protected abstract void onRun() throws Exception;
 
     /**
      * 错误回调（执行线程）
      *
      * @param e
      */
-    protected void onError(Throwable e)
+    protected void onError(Exception e)
     {
     }
 
@@ -213,7 +175,6 @@ public abstract class FTask
     public enum State
     {
         None,
-        Submit,
         Running,
         DoneCancel,
         DoneError,
