@@ -5,11 +5,12 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +24,7 @@ public class FTaskManager
     private final ExecutorService SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private final Map<TaskRunnable, FTaskInfo> mMapTaskInfo = new HashMap<>();
-    private final Map<String, Map<FTaskInfo, String>> mMapTaskTag = new HashMap<>();
+    private final Map<String, Set<FTaskInfo>> mMapTaskTag = new HashMap<>();
 
     private boolean mDebug;
 
@@ -93,18 +94,18 @@ public class FTaskManager
         final FTaskInfo info = new FTaskInfo(tag, wrapper);
         mMapTaskInfo.put(runnable, info);
 
-        Map<FTaskInfo, String> mapTagInfo = mMapTaskTag.get(tag);
-        if (mapTagInfo == null)
+        Set<FTaskInfo> tagInfo = mMapTaskTag.get(tag);
+        if (tagInfo == null)
         {
-            mapTagInfo = new ConcurrentHashMap<>();
-            mMapTaskTag.put(tag, mapTagInfo);
+            tagInfo = new HashSet<>();
+            mMapTaskTag.put(tag, tagInfo);
         }
-        mapTagInfo.put(info, "");
+        tagInfo.add(info);
 
         if (isDebug())
         {
             Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + " tag:" + tag + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagInfo.size());
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + tagInfo.size());
         }
 
         executorService.submit(wrapper);
@@ -137,11 +138,11 @@ public class FTaskManager
         if (mMapTaskTag.isEmpty())
             return null;
 
-        final Map<FTaskInfo, String> map = mMapTaskTag.get(tag);
-        if (map == null || map.isEmpty())
+        final Set<FTaskInfo> tagInfo = mMapTaskTag.get(tag);
+        if (tagInfo == null || tagInfo.isEmpty())
             return null;
 
-        return new ArrayList<>(map.keySet());
+        return new ArrayList<>(tagInfo);
     }
 
     /**
@@ -204,28 +205,25 @@ public class FTaskManager
             throw new IllegalArgumentException("runnable is null");
 
         final FTaskInfo info = mMapTaskInfo.remove(runnable);
-        if (info != null)
+        if (info == null)
+            return false;
+
+        final String tag = info.getTag();
+        final Set<FTaskInfo> tagInfo = mMapTaskTag.get(tag);
+        if (tagInfo == null || tagInfo.isEmpty())
+            return false;
+
+        final boolean result = tagInfo.remove(info);
+        if (tagInfo.isEmpty())
+            mMapTaskTag.remove(tag);
+
+        if (isDebug())
         {
-            final String tag = info.getTag();
-            final Map<FTaskInfo, String> mapTagInfo = mMapTaskTag.get(tag);
-
-            if (mapTagInfo != null)
-            {
-                final boolean result = mapTagInfo.remove(info) != null;
-                if (mapTagInfo.isEmpty())
-                    mMapTaskTag.remove(tag);
-
-                if (isDebug())
-                {
-                    Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
-                            "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + mapTagInfo.size());
-                }
-
-                return result;
-            }
+            Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + tagInfo.size());
         }
 
-        return false;
+        return result;
     }
 
     private final class RunnableWrapper extends FutureTask<String>
