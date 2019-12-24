@@ -131,18 +131,17 @@ public class FTaskManager
      */
     public synchronized List<FTaskInfo> getTaskInfo(String tag)
     {
-        final List<FTaskInfo> listInfo = new ArrayList<>();
+        if (TextUtils.isEmpty(tag))
+            return null;
 
-        if (!TextUtils.isEmpty(tag) && mMapTaskTag.size() > 0)
-        {
-            final Map<FTaskInfo, String> map = mMapTaskTag.get(tag);
-            if (map != null && map.size() > 0)
-            {
-                listInfo.addAll(map.keySet());
-            }
-        }
+        if (mMapTaskTag.isEmpty())
+            return null;
 
-        return listInfo;
+        final Map<FTaskInfo, String> map = mMapTaskTag.get(tag);
+        if (map == null || map.isEmpty())
+            return null;
+
+        return new ArrayList<>(map.keySet());
     }
 
     /**
@@ -184,10 +183,13 @@ public class FTaskManager
             Log.i(FTaskManager.class.getName(), "try cancelTag tag:" + tag + " mayInterruptIfRunning:" + mayInterruptIfRunning);
 
         final List<FTaskInfo> listInfo = getTaskInfo(tag);
-        for (FTaskInfo item : listInfo)
+        if (listInfo != null)
         {
-            if (item.cancel(mayInterruptIfRunning))
-                count++;
+            for (FTaskInfo item : listInfo)
+            {
+                if (item.cancel(mayInterruptIfRunning))
+                    count++;
+            }
         }
 
         if (isDebug())
