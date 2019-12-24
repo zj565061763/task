@@ -104,8 +104,8 @@ public class FTaskManager
 
         if (isDebug())
         {
-            Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + " tag:" + tag + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + tagInfo.size());
+            Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + "\r\n" +
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " - " + tag);
         }
 
         executorService.submit(wrapper);
@@ -210,7 +210,7 @@ public class FTaskManager
 
         final String tag = info.getTag();
         final Set<FTaskInfo> tagInfo = mMapTaskTag.get(tag);
-        if (tagInfo == null || tagInfo.isEmpty())
+        if (tagInfo == null)
             return false;
 
         final boolean result = tagInfo.remove(info);
@@ -220,7 +220,7 @@ public class FTaskManager
         if (isDebug())
         {
             Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "-" + tagInfo.size());
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " - " + tag);
         }
 
         return result;
