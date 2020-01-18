@@ -263,9 +263,10 @@ public class FTaskManager
                     onError((Exception) cause);
                 else
                     onError(e);
+            } finally
+            {
+                onFinish();
             }
-
-            onFinish();
         }
 
         protected void onError(Exception e)
