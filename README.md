@@ -36,16 +36,6 @@ final FTask task = new FTask(TAG)
     }
 };
 
-// 设置状态变化回调
-task.setOnStateChangeCallback(new FTask.OnStateChangeCallback()
-{
-    @Override
-    public void onStateChanged(FTask.State oldState, FTask.State newState)
-    {
-        Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState);
-    }
-});
-
 task.submit(); //把任务提交到线程池
 task.submitSequence(); //把任务提交到线程池，按顺序一个个执行
 task.cancel(true); //取消任务，true-如果线程已经执行有可能被打断收到异常，如果不希望线程被打断，取消的时候传false，然后自己在onRun中判断isCancelled()来主动停止线程
