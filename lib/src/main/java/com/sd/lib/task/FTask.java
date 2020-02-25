@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 public abstract class FTask
 {
     private final String mTag;
-    private volatile State mState = State.None;
+    private State mState = State.None;
 
     private OnStateChangeCallback mOnStateChangeCallback;
 
@@ -182,7 +182,7 @@ public abstract class FTask
     {
     }
 
-    private void setState(State state)
+    private synchronized void setState(State state)
     {
         if (state == null)
             throw new IllegalArgumentException("state is null");
