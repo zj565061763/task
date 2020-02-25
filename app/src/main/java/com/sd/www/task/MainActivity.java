@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 addTask();
                 break;
             case R.id.btn_cancel_task:
+                Log.e(TAG, "cancelTag start");
                 FTaskManager.getInstance().cancelTag(TAG, true);
+                Log.e(TAG, "cancelTag end");
                 break;
         }
     }
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "onRun" + " " + this);
+                Log.i(TAG, "onRun" + " " + this + " " + Thread.currentThread().getName());
                 new TestRunnable().run();
             }
 
@@ -49,33 +51,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             protected void onError(Exception e)
             {
                 super.onError(e);
-                Log.i(TAG, "onError:" + e + " " + this);
+                Log.i(TAG, "onError:" + e + " " + this + " " + Thread.currentThread().getName());
             }
 
             @Override
             protected void onCancel()
             {
                 super.onCancel();
-                Log.i(TAG, "onCancel" + " " + this);
+                Log.i(TAG, "onCancel" + " " + this + " " + Thread.currentThread().getName());
             }
 
             @Override
             protected void onFinish()
             {
                 super.onFinish();
-                Log.i(TAG, "onFinish" + " " + this);
+                Log.i(TAG, "onFinish" + " " + this + " " + Thread.currentThread().getName());
             }
         };
-
-        // 设置状态变化回调
-        task.setOnStateChangeCallback(new FTask.OnStateChangeCallback()
-        {
-            @Override
-            public void onStateChanged(FTask.State oldState, FTask.State newState)
-            {
-                Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState + " " + task);
-            }
-        });
 
         task.submit();
     }
