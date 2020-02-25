@@ -11,28 +11,28 @@ final FTask task = new FTask(TAG)
     @Override
     protected void onRun() throws Exception
     {
-        Log.i(TAG, "onRun" + " " + this);
+        Log.i(TAG, "onRun");
     }
 
     @Override
     protected void onError(Exception e)
     {
         super.onError(e);
-        Log.i(TAG, "onError:" + e + " " + this);
+        Log.i(TAG, "onError:" + e );
     }
 
     @Override
     protected void onCancel()
     {
         super.onCancel();
-        Log.i(TAG, "onCancel" + " " + this);
+        Log.i(TAG, "onCancel" );
     }
 
     @Override
     protected void onFinish()
     {
         super.onFinish();
-        Log.i(TAG, "onFinish" + " " + this);
+        Log.i(TAG, "onFinish" );
     }
 };
 
@@ -42,7 +42,7 @@ task.setOnStateChangeCallback(new FTask.OnStateChangeCallback()
     @Override
     public void onStateChanged(FTask.State oldState, FTask.State newState)
     {
-        Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState + " " + task);
+        Log.i(TAG, "onStateChanged:" + oldState + " -> " + newState);
     }
 });
 
