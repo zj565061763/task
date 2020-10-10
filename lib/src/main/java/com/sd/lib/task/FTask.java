@@ -99,6 +99,7 @@ public abstract class FTask
         public void onSubmit()
         {
             mIsCancelled = false;
+            FTask.this.onSubmit();
         }
 
         @Override
@@ -132,6 +133,13 @@ public abstract class FTask
             return FTask.this.toString();
         }
     };
+
+    /**
+     * 任务被提交回调
+     */
+    protected void onSubmit()
+    {
+    }
 
     /**
      * 执行回调（执行线程）

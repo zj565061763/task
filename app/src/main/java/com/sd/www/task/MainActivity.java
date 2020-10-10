@@ -41,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final FTask task = new FTask(TAG)
         {
             @Override
+            protected void onSubmit()
+            {
+                super.onSubmit();
+                Log.i(TAG, "onSubmit" + " " + this + " " + Thread.currentThread().getName());
+            }
+
+            @Override
             protected void onRun() throws Exception
             {
                 Log.i(TAG, "onRun start" + " " + this + " " + Thread.currentThread().getName());
