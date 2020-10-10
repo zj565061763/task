@@ -43,8 +43,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onRun() throws Exception
             {
-                Log.i(TAG, "onRun" + " " + this + " " + Thread.currentThread().getName());
+                Log.i(TAG, "onRun start" + " " + this + " " + Thread.currentThread().getName());
                 new TestRunnable().run();
+                Log.i(TAG, "onRun finish"
+                        + " isCancelled:" + isCancelled()
+                        + " " + this + " " + Thread.currentThread().getName());
             }
 
             @Override

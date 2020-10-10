@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 public abstract class FTask
 {
     private final String mTag;
+    private volatile boolean mIsCancelled;
 
     public FTask()
     {
@@ -82,8 +83,24 @@ public abstract class FTask
         return taskInfo != null && !taskInfo.isDone();
     }
 
+    /**
+     * 当前任务是否已被取消
+     *
+     * @return
+     */
+    public final boolean isCancelled()
+    {
+        return mIsCancelled;
+    }
+
     private final FTaskManager.TaskRunnable mTaskRunnable = new FTaskManager.TaskRunnable()
     {
+        @Override
+        public void onSubmit()
+        {
+            mIsCancelled = false;
+        }
+
         @Override
         public void onRun() throws Exception
         {
@@ -99,6 +116,7 @@ public abstract class FTask
         @Override
         public void onCancel()
         {
+            mIsCancelled = true;
             FTask.this.onCancel();
         }
 

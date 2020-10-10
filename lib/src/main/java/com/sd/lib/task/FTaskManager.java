@@ -105,10 +105,11 @@ public class FTaskManager
         if (isDebug())
         {
             Log.i(FTaskManager.class.getName(), "+++++ submitTo runnable:" + runnable + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " - " + tag);
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " tag:" + tag);
         }
 
         executorService.submit(wrapper);
+        runnable.onSubmit();
 
         return info;
     }
@@ -219,7 +220,7 @@ public class FTaskManager
         if (isDebug())
         {
             Log.i(FTaskManager.class.getName(), "removeTask runnable:" + runnable + " result:" + result + "\r\n" +
-                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " - " + tag);
+                    "size:" + mMapTaskInfo.size() + "," + mMapTaskTag.size() + "," + tagInfo.size() + " tag:" + tag);
         }
 
         return result;
@@ -318,6 +319,8 @@ public class FTaskManager
 
     public interface TaskRunnable
     {
+        void onSubmit();
+
         void onRun() throws Exception;
 
         void onError(Exception e);
