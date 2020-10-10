@@ -9,6 +9,13 @@
 final FTask task = new FTask(TAG)
 {
     @Override
+    protected void onSubmit()
+    {
+        super.onSubmit();
+        Log.i(TAG, "onSubmit");
+    }
+
+    @Override
     protected void onRun() throws Exception
     {
         Log.i(TAG, "onRun");
