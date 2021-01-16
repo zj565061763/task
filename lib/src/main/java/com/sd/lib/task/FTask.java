@@ -3,12 +3,16 @@ package com.sd.lib.task;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 public abstract class FTask
 {
     private final String mTag;
     private volatile boolean mIsCancelled;
+
+    private final Map<InternalRunnable, String> mRunnableHolder = new ConcurrentHashMap<>();
 
     public FTask()
     {
@@ -69,6 +73,7 @@ public abstract class FTask
      */
     public final boolean cancel(boolean mayInterruptIfRunning)
     {
+        removeMainRunnable();
         return FTaskManager.getInstance().cancel(mTaskRunnable, mayInterruptIfRunning);
     }
 
@@ -177,6 +182,59 @@ public abstract class FTask
      */
     protected void onFinish()
     {
+    }
+
+    /**
+     * 提交一个主线程执行的{@link Runnable}，如果当前任务已经被取消，则不执行
+     *
+     * @param runnable
+     * @return true-提交成功
+     */
+    protected synchronized final boolean postMain(Runnable runnable)
+    {
+        if (runnable == null)
+            return false;
+
+        if (isCancelled())
+            return false;
+
+        final InternalRunnable internalRunnable = new InternalRunnable(runnable);
+        mRunnableHolder.put(internalRunnable, "");
+        runOnUiThread(internalRunnable);
+        return true;
+    }
+
+    private synchronized void removeMainRunnable()
+    {
+        for (InternalRunnable runnable : mRunnableHolder.keySet())
+        {
+            removeCallbacks(runnable);
+        }
+        mRunnableHolder.clear();
+    }
+
+    private final class InternalRunnable implements Runnable
+    {
+        private final Runnable mRunnable;
+
+        public InternalRunnable(Runnable runnable)
+        {
+            if (runnable == null)
+                throw new NullPointerException("runnable is null");
+            mRunnable = runnable;
+        }
+
+        @Override
+        public void run()
+        {
+            synchronized (FTask.this)
+            {
+                mRunnableHolder.remove(this);
+            }
+
+            if (!isCancelled())
+                mRunnable.run();
+        }
     }
 
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
